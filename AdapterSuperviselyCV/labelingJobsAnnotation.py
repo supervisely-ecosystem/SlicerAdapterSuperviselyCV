@@ -59,12 +59,14 @@ More information about the module can be found in the <a href='https://github.co
         )
         self.parent.acknowledgementText = _(
             """
-This extension was developed by <a href='https://www.linkedin.com/in/s-sych/'>Siarhei Sych</a> (<a href='https://supervisely.com/'>Supervisely</a>).
+This extension module has been developed by <a href='https://www.linkedin.com/in/s-sych/'>Siarhei Sych</a> (<a href='https://supervisely.com/'>Supervisely</a>).
+It is based on a scripted module template originally developed by Jean-Christophe Fillion-Robin, Kitware Inc., Andras Lasso, PerkLab,
+and Steve Pieper, Isomics, Inc. and was partially funded by NIH grant 3P41RR013218-12S1.
 """
         )
 
 
-# --------------------------------- labelingJobsAnnotationWidget --------------------------------- #
+# --------------------------------- LabelingJobsAnnotationWidget --------------------------------- #
 
 
 class labelingJobsAnnotationWidget(ScriptedLoadableModuleWidget):
@@ -298,7 +300,7 @@ Do you want to continue?"""
         self.logic.skipSegmentStatusCheck = self.ui.skipSegmentStatusCheck.isChecked()
 
 
-# ---------------------------------- labelingJobsAnnotationLogic --------------------------------- #
+# ---------------------------------- LabelingJobsAnnotationLogic --------------------------------- #
 
 
 class labelingJobsAnnotationLogic(ScriptedLoadableModuleLogic):
