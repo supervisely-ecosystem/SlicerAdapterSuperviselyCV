@@ -69,7 +69,7 @@ This module allows reviewers to make changes to annotations, accept or reject th
 
    <img src="./Images/subject_hierarchy.png" style="width:400px">
 
-7. To create a new object, simply select any of the Segmentation and add a new Segment. When creating objects, it is not necessary to name them and change their color, as they will be converted to class names and colors once they are uploaded to the server. If during the creation process you need to change the name or color for convenience, you can do so without worrying about how it will be saved.
+7. To create a new object, simply select any of the Segmentation and add a new Segment. When creating objects, it is not necessary to name them and change their color, as they will be converted to class names and colors once they are uploaded to the server. If during the creation process, you need to change the name or color for convenience, you can do so without worrying about how it will be saved.
 8. Add the necessary tags for Volume.
 9. If your work on this Volume is complete, click the `Mark as Done` button. This will save your work and designate the Volume with the necessary status, which will help not only you when switching between Volumes, but also the reviewer to realize that the annotation of this Volume is complete.
 10. Once the work in this Labeling Job is complete, click on the `Submit for review` button. The current Labeling Job will change status to `On review` and drop from the list of available jobs. It is now ready for the review process.
@@ -86,7 +86,7 @@ When this setting is checked (default), all segments will be saved regardless of
 
 Otherwise, segments with the status `Completed` will be saved, and segments with the status `In progress` will initiate a save request.
 
-Segments with all other statuses will not be saved, but their current state in the current session will not change. To reset their state you will need to exit the current Labeling Job and re-enter with updated local data. (Local reset will be added in the future)
+Segments with all other statuses will not be saved, but their current state in the current scene not change. To reset their state you will need to change the current Volume to another one and get back. Or reload the current Labeling Job. (Local reset will be added in the future)
 
 ⚠️ Deleted segments are deleted on save regardless of settings and statuses.
 
