@@ -11,7 +11,7 @@ You can read more about Labeling Jobs in our blog post [Mastering Labeling Jobs:
 The functionality of this extension relies on utilizing the [Supervisely Python SDK](https://supervisely.readthedocs.io/en/latest/index.html), which, in turn, requires:
 
 - **Python 3.8** or later.
-- **3D Slicer 5.2.0** or later.
+- **3D Slicer 5.4.0** or later.
 
 ## Labeling Jobs Annotation Module Preview
 
