@@ -1,4 +1,20 @@
+<div align="center" markdown>
+
 # Adapter for Supervisely Computer Vision platform
+
+<p align="center">
+  <a href="#Dependencies">Dependencies</a> •
+  <a href="#Labeling-Jobs-Annotation-Module-Preview">Preview</a> •
+  <a href="#Basic-Tutorial">Tutorial</a> •
+  <a href="#Module-Settings-and-Options">Module Settings</a> •
+  <a href="#Release-Notes">Release Notes</a>  
+</p>
+
+![](https://img.shields.io/badge/3D%20Slicer-%205.6.1-C0D4E5)
+![](https://img.shields.io/badge/AdapterSuperviselyCV-0.0.1-FF3C89)
+[![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervisely.com/slack)
+
+</div>
 
 A 3D Slicer extension designed to organize and manage the work of labeling teams on the Supervisely computer vision platform.
 
@@ -98,3 +114,9 @@ There are two options for restarting the Job:
 ### Working directory
 
 The user can configure the working directory where data will be stored locally when working with the Labeling Job.
+
+## Release Notes
+
+#### v0.0.1
+
+☝️ Does not support recording statistics
