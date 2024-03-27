@@ -1,0 +1,93 @@
+import logging
+from typing import Literal
+
+import qt
+import slicer
+
+
+class InputDialog(qt.QDialog):
+    def __init__(
+        self,
+        parent=None,
+        options=None,
+        validate: Literal["number"] = None,
+        icon=None,
+        title=None,
+        label=None,
+    ):
+        super(InputDialog, self).__init__(parent)
+        self.setWindowFlags(self.windowFlags() & ~qt.Qt.WindowContextHelpButtonHint)
+        self.vlayout = qt.QVBoxLayout(self)
+        if label:
+            self.label = qt.QLabel(label, self)
+            self.vlayout.addWidget(self.label)
+        self.button = qt.QPushButton("Save", self)
+        if not options:
+            self.line_edit = qt.QLineEdit(self)
+            self.button.clicked.connect(self.save_and_close_line)
+            self.vlayout.addWidget(self.line_edit)
+        else:
+            self.combo_box = qt.QComboBox(self)
+            self.combo_box.addItems(options)
+            self.button.clicked.connect(self.save_and_close_combo)
+            self.vlayout.addWidget(self.combo_box)
+        self.vlayout.addWidget(self.button)
+        self.validate = validate
+
+        if icon:
+            self.setWindowIcon(icon)
+        if title:
+            title = title.replace("    ➡️", "")
+            self.setWindowTitle(title)
+
+        self.adjustSize()
+        self.move(qt.QCursor.pos())
+
+    def save_and_close_line(self):
+        self.user_input = self.line_edit.text
+        if self.validate == "number":
+            try:
+                int(self.user_input)
+            except ValueError:
+                slicer.util.errorDisplay("Please enter a number")
+                return
+        self.accept()
+
+    def save_and_close_combo(self):
+        self.user_input = self.combo_box.currentText
+        self.accept()
+
+    def execute_and_assign_tag(self, text, replace_str, newButton, logic):
+        if self.exec_():
+            userInput = self.user_input
+            if ": NUM" in text:
+                userInput = int(userInput)
+            tag = {"name": text.split(replace_str)[0], "value": userInput}
+            if not logic.volume.hasTag(tag["name"]):
+                newButton.setText(text.replace(replace_str, f": {userInput}    🗑️"))
+                logic.volume.assignTag(tag)
+                return True
+            else:
+                self.show_notification(f"Tag [{tag['name']}] already exists.", 2000)
+                return False
+        else:
+            return False
+
+    def show_notification(self, message, duration=2000):
+        logging.debug(f"Notification shown: {message}")
+        msg = qt.QMessageBox(self)
+        msg.setText(message)
+        msg.setWindowTitle("Notification")
+        qt.QTimer.singleShot(duration, msg.close)
+        msg.exec_()
+
+    @staticmethod
+    def show_notification_none(icon, message, duration=2000):
+        logging.debug(f"Notification shown: {message}")
+        msg = qt.QMessageBox()
+        msg.setText(message)
+        msg.setWindowIcon(icon)
+        msg.setWindowTitle("Notification")
+        msg.move(qt.QCursor.pos())
+        qt.QTimer.singleShot(duration, msg.close)
+        msg.exec_()
