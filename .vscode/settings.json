@@ -5,6 +5,9 @@
         "supervisely.egg-info": true,
         ".venv": true
     },
+    "files.associations": {
+        "*.svg": "html",
+        "*.ui": "html",},
     "python.defaultInterpreterPath": "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\bin\\PythonSlicer.exe",
     "python.autoComplete.extraPaths": [
         "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\",
@@ -25,7 +28,9 @@
     ],
     
     "[html]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 4,
+        "editor.detectIndentation": false,
     },
     "[json]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",

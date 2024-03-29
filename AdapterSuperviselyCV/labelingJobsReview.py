@@ -218,6 +218,7 @@ Slicer will be restarted after installation.
             self.logic.downloadData()
             # self.logic.changeJobStatus("on_review")
             self.ui.workingDirButton.setEnabled(False)
+            self.logic.fulfillInfo()
 
     @log_method_call
     def onSelectVolume(self) -> None:
@@ -490,6 +491,19 @@ class labelingJobsReviewLogic(ScriptedLoadableModuleLogic):
         self.activeJob = self._getItemFromSelector(self.jobList, self.ui.jobSelector.currentText)
         self.ui.activeJob.setEnabled(False)
         self.ui.activeJob.setChecked(False)
+
+    @log_method_call
+    def fulfillInfo(self) -> None:
+        self.ui.descriptionLabel.clear()
+        self.ui.readmeLabel.clear()
+        if self.activeJob.description:
+            self.ui.descriptionLabel.setText(self.activeJob.description)
+        else:
+            self.ui.descriptionLabel.setText("No description")
+        if self.activeJob.readme:
+            self.ui.readmeLabel.setText(self.activeJob.readme)
+        else:
+            self.ui.readmeLabel.setText("No readme")
 
     @log_method_call
     def downloadData(self) -> None:
