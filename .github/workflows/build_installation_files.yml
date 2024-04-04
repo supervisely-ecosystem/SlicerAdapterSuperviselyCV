@@ -18,12 +18,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Extract tag name on release
+      - name: Extract Tag Name on Release
         id: extract_tag
         run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
         if: github.event_name == 'release'
 
-      - name: Extract tag name on workflow dispatch
+      - name: Extract Tag Name on Workflow Dispatch
         id: get-latest-release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -33,7 +33,7 @@ jobs:
           echo "TAG_NAME=$latest_release" >> $GITHUB_ENV
         if: github.event_name == 'workflow_dispatch'
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests beautifulsoup4
@@ -58,7 +58,7 @@ jobs:
           ')" >> $GITHUB_ENV
         shell: bash
 
-      - name: Set revision and version as env variables
+      - name: Set Version and Revision as ENV Variables
         run: |
           echo "VERSION=$(echo ${{ env.SLICER_INFO }} | cut -d' ' -f1)" >> $GITHUB_ENV
           echo "REVISION=$(echo ${{ env.SLICER_INFO }} | cut -d' ' -f2)" >> $GITHUB_ENV
@@ -73,37 +73,62 @@ jobs:
         run: |
           echo "EXT_NAME=$(echo ${GITHUB_REPOSITORY#*/} | sed 's/^Slicer//')" >> $GITHUB_ENV
 
-      - name: Set directory paths as env variables
+      - name: Set Directory Paths as ENV Variables
         run: |
-          echo "MAIN_DIR=${{ env.REVISION }}-win-amd64-${{ env.EXT_NAME }}" >> $GITHUB_ENV
-          echo "DIR1=${{ env.REVISION }}-win-amd64-${{ env.EXT_NAME }}/lib/Slicer-${{ env.VERSION }}/qt-scripted-modules/" >> $GITHUB_ENV
-          echo "DIR2=${{ env.REVISION }}-win-amd64-${{ env.EXT_NAME }}/share/Slicer-${{ env.VERSION }}/" >> $GITHUB_ENV
+          echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo "MAIN_DIR_W=${{ env.REVISION }}-win-amd64-${{ env.EXT_NAME }}" >> $GITHUB_ENV
+          echo "DIR1_W=${{ env.REVISION }}-win-amd64-${{ env.EXT_NAME }}/lib/Slicer-${{ env.VERSION }}/qt-scripted-modules/" >> $GITHUB_ENV
+          echo "DIR2_W=${{ env.REVISION }}-win-amd64-${{ env.EXT_NAME }}/share/Slicer-${{ env.VERSION }}/" >> $GITHUB_ENV
+
+          echo "MAIN_DIR_L=${{ env.REVISION }}-linux-amd64-${{ env.EXT_NAME }}" >> $GITHUB_ENV
+          echo "DIR1_L=${{ env.REVISION }}-linux-amd64-${{ env.EXT_NAME }}/lib/Slicer-${{ env.VERSION }}/qt-scripted-modules/" >> $GITHUB_ENV
+          echo "DIR2_L=${{ env.REVISION }}-linux-amd64-${{ env.EXT_NAME }}/share/Slicer-${{ env.VERSION }}/" >> $GITHUB_ENV
+
+          echo "MAIN_DIR_M=${{ env.REVISION }}-macosx-amd64-${{ env.EXT_NAME }}" >> $GITHUB_ENV
+          echo "DIR1_M=${{ env.REVISION }}-macosx-amd64-${{ env.EXT_NAME }}/Slicer.app/Contents/Extensions-${{ env.REVISION }}/${{ env.EXT_NAME }}/lib/Slicer-${{ env.VERSION }}/qt-scripted-modules/" >> $GITHUB_ENV
+          echo "DIR2_M=${{ env.REVISION }}-macosx-amd64-${{ env.EXT_NAME }}/Slicer.app/Contents/Extensions-${{ env.REVISION }}/${{ env.EXT_NAME }}/share/Slicer-${{ env.VERSION }}/" >> $GITHUB_ENV
+
         shell: bash
 
-      - name: Create directory structure
+      - name: Create Directory Structure
         run: |
-          mkdir -p ${{ env.DIR1 }}
-          mkdir -p ${{ env.DIR2 }}
+          mkdir -p ${{ env.DIR1_W }}
+          mkdir -p ${{ env.DIR2_W }}
+          mkdir -p ${{ env.DIR1_L }}
+          mkdir -p ${{ env.DIR2_L }}
+          mkdir -p ${{ env.DIR1_M }}
+          mkdir -p ${{ env.DIR2_M }}
         shell: bash
 
-      - name: Copy files
+      - name: Copy Files
         run: |
-          cp -R ${{ env.EXT_NAME }} ${{ env.DIR1 }}
-          rm ${{ env.DIR1 }}/${{ env.EXT_NAME }}/CMakeLists.txt
-          cp ${{ env.EXT_NAME }}.s4ext ${{ env.DIR2 }}
+          cp -R ${{ env.EXT_NAME }}/* ${{ env.DIR1_W }}
+          rm ${{ env.DIR1_W }}/CMakeLists.txt
+          cp ${{ env.EXT_NAME }}.s4ext ${{ env.DIR2_W }}
+
+          cp -R ${{ env.EXT_NAME }}/* ${{ env.DIR1_L }}
+          rm ${{ env.DIR1_L }}/CMakeLists.txt
+          cp ${{ env.EXT_NAME }}.s4ext ${{ env.DIR2_L }}
+
+          cp -R ${{ env.EXT_NAME }}/* ${{ env.DIR1_M }}
+          rm ${{ env.DIR1_M }}/CMakeLists.txt
+          cp ${{ env.EXT_NAME }}.s4ext ${{ env.DIR2_M }}
         shell: bash
 
-      - name: Archive files
+      - name: Archive Files
         run: |
-          zip -r ${{ env.MAIN_DIR }}.zip ${{ env.MAIN_DIR }}
-          # tar -czvf ${{ env.MAIN_DIR }}.tar.gz ${{ env.MAIN_DIR }}
+          zip -r ${{ env.MAIN_DIR_W }}-${{ env.DATE }}.zip ${{ env.MAIN_DIR_W }}
+          tar -czvf ${{ env.MAIN_DIR_L }}-${{ env.DATE }}.tar.gz ${{ env.MAIN_DIR_L }}
+          tar -czvf ${{ env.MAIN_DIR_M }}-${{ env.DATE }}.tar.gz ${{ env.MAIN_DIR_M }}
 
       - name: Upload Archive to Current Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ${{ env.MAIN_DIR }}.zip
+            ${{ env.MAIN_DIR_W }}-${{ env.DATE }}.zip
+            ${{ env.MAIN_DIR_L }}-${{ env.DATE }}.tar.gz
+            ${{ env.MAIN_DIR_M }}-${{ env.DATE }}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -112,4 +137,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload $TAG_NAME ${{ env.MAIN_DIR }}.zip --clobber
+          gh release upload $TAG_NAME ${{ env.MAIN_DIR_W }}-${{ env.DATE }}.zip --clobber
+          gh release upload $TAG_NAME ${{ env.MAIN_DIR_L }}-${{ env.DATE }}.tar.gz --clobber
+          gh release upload $TAG_NAME ${{ env.MAIN_DIR_M }}-${{ env.DATE }}.tar.gz --clobber
