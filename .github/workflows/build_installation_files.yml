@@ -1,0 +1,115 @@
+name: Build Installation Files
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract tag name on release
+        id: extract_tag
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        if: github.event_name == 'release'
+
+      - name: Extract tag name on workflow dispatch
+        id: get-latest-release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          repository=${{ github.repository }}
+          latest_release=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "/repos/$repository/tags" | jq -r '.[0].name')
+          echo "TAG_NAME=$latest_release" >> $GITHUB_ENV
+        if: github.event_name == 'workflow_dispatch'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4
+
+      - name: Get Slicer Stable Revision and Version
+        id: get_slicer_info
+        run: |
+          echo "SLICER_INFO=$(python -c '
+          import requests
+          from bs4 import BeautifulSoup
+          url = "https://download.slicer.org"
+          response = requests.get(url)
+          soup = BeautifulSoup(response.text, "html.parser")
+          link = soup.select_one("section div div div div div div table tbody tr td a")
+          if link is not None:
+              revision = link.text.split("\n")[2].strip().split(" ")[-1]
+              version = link.text.split("\n")[1].strip().split(".")
+              version = ".".join(version[:2])
+              print(version, revision)
+          else:
+              print("unknown unknown")
+          ')" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Set revision and version as env variables
+        run: |
+          echo "VERSION=$(echo ${{ env.SLICER_INFO }} | cut -d' ' -f1)" >> $GITHUB_ENV
+          echo "REVISION=$(echo ${{ env.SLICER_INFO }} | cut -d' ' -f2)" >> $GITHUB_ENV
+          if [[ "${{ env.VERSION }}" == "unknown" ]]; then
+            echo "Version is unknown"
+            exit 1
+          fi
+        shell: bash
+
+      - name: Get Extension Name
+        id: ext_name
+        run: |
+          echo "EXT_NAME=$(echo ${GITHUB_REPOSITORY#*/} | sed 's/^Slicer//')" >> $GITHUB_ENV
+
+      - name: Set directory paths as env variables
+        run: |
+          echo "MAIN_DIR=${{ env.REVISION }}-win-amd64-${{ env.EXT_NAME }}" >> $GITHUB_ENV
+          echo "DIR1=${{ env.REVISION }}-win-amd64-${{ env.EXT_NAME }}/lib/Slicer-${{ env.VERSION }}/qt-scripted-modules/" >> $GITHUB_ENV
+          echo "DIR2=${{ env.REVISION }}-win-amd64-${{ env.EXT_NAME }}/share/Slicer-${{ env.VERSION }}/" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Create directory structure
+        run: |
+          mkdir -p ${{ env.DIR1 }}
+          mkdir -p ${{ env.DIR2 }}
+        shell: bash
+
+      - name: Copy files
+        run: |
+          cp -R ${{ env.EXT_NAME }} ${{ env.DIR1 }}
+          rm ${{ env.DIR1 }}/${{ env.EXT_NAME }}/CMakeLists.txt
+          cp ${{ env.EXT_NAME }}.s4ext ${{ env.DIR2 }}
+        shell: bash
+
+      - name: Archive files
+        run: |
+          zip -r ${{ env.MAIN_DIR }}.zip ${{ env.MAIN_DIR }}
+          # tar -czvf ${{ env.MAIN_DIR }}.tar.gz ${{ env.MAIN_DIR }}
+
+      - name: Upload Archive to Current Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{ env.MAIN_DIR }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Archive to Latest Release
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload $TAG_NAME ${{ env.MAIN_DIR }}.zip --clobber
