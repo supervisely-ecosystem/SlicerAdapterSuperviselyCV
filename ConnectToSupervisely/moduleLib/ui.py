@@ -158,3 +158,19 @@ class SuperviselyDialog(qt.QDialog):
 
     def __bool__(self):
         return self.return_decision()
+
+
+def block_widget(widget, text: str = None):
+    if text is None:
+        text = "The module could not be loaded because the <a href='https://pypi.org/project/supervisely/'>Supervisely SDK</a> is not installed."
+    errorLabel = qt.QLabel(text)
+    errorLabel.setTextFormat(qt.Qt.RichText)
+    errorLabel.setTextInteractionFlags(qt.Qt.TextBrowserInteraction)
+    errorLabel.setOpenExternalLinks(True)
+    errorLabel.setStyleSheet("border: 4px solid black; font-size: 14px; ")
+    errorLabel.setAlignment(qt.Qt.AlignCenter)
+    while widget.layout.count():
+        child = widget.layout.takeAt(0)
+        if child.widget():
+            child.widget().deleteLater()
+    widget.layout.addWidget(errorLabel)

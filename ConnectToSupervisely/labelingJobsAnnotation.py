@@ -24,6 +24,8 @@ except ModuleNotFoundError:
 
 from moduleLib import (
     InputDialog,
+    block_widget,
+    check_and_restore_libraries,
     import_supervisely,
     log_method_call,
     log_method_call_args,
@@ -46,7 +48,7 @@ class labelingJobsAnnotation(ScriptedLoadableModule):
 
     def __init__(self, parent):
         ScriptedLoadableModule.__init__(self, parent)
-        self.parent.title = _("Labeling Jobs Annotation")
+        self.parent.title = _("Supervisely Labeling Jobs Annotating")
         self.parent.categories = [translate("qSlicerAbstractCoreModule", "Supervisely")]
         self.parent.dependencies = []
         self.parent.contributors = []
@@ -85,20 +87,16 @@ class labelingJobsAnnotationWidget(ScriptedLoadableModuleWidget):
         """Called when the user opens the module the first time and the widget is initialized."""
         ScriptedLoadableModuleWidget.setup(self)
 
-        # Set self.ready_to_start = True if supervisely module is installed
+        # Check and restore libraries in case of unsuccessful installation of the Supervisely package.
+        # Supervisely package will be uninstalled if you confirm restoring the previous versions of the libraries.
+        check_and_restore_libraries(self)
+
+        # Set self.ready_to_start = True if supervisely module is imported successfully.
         import_supervisely(self)
 
+        # If supervisely module is not imported successfully, block the widget.
         if not self.ready_to_start:
-            errorLabel = qt.QLabel(
-                "The module could not be loaded because the Supervisely SDK is not installed."
-            )
-            errorLabel.setStyleSheet("border: 1px solid black; font-size: 14px;")
-            while self.layout.count():
-                child = self.layout.takeAt(0)
-                if child.widget():
-                    child.widget().deleteLater()
-            self.layout.addWidget(errorLabel)
-            self.layout.parent().adjustSize()
+            block_widget(self)
             return
 
         if not os.path.exists(ENV_FILE_PATH):

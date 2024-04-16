@@ -25,6 +25,9 @@ except ModuleNotFoundError:
 
 from moduleLib import (
     InputDialog,
+    block_widget,
+    check_and_restore_libraries,
+    import_supervisely,
     log_method_call,
     log_method_call_args,
     segmentClass,
@@ -47,7 +50,7 @@ class labelingJobsReview(ScriptedLoadableModule):
 
     def __init__(self, parent):
         ScriptedLoadableModule.__init__(self, parent)
-        self.parent.title = _("Labeling Jobs Review")
+        self.parent.title = _("Supervisely Labeling Jobs Reviewing")
         self.parent.categories = [translate("qSlicerAbstractCoreModule", "Supervisely")]
         self.parent.dependencies = []
         self.parent.contributors = []
@@ -80,25 +83,23 @@ class labelingJobsReviewWidget(ScriptedLoadableModuleWidget):
         """Called when the user opens the module the first time and the widget is initialized."""
         ScriptedLoadableModuleWidget.__init__(self, parent)
         self.logic = None
+        self.ready_to_start = False
 
     def setup(self) -> None:
         """Called when the user opens the module the first time and the widget is initialized."""
         ScriptedLoadableModuleWidget.setup(self)
 
-        try:
-            import supervisely
-        except ModuleNotFoundError:
-            slicer.util.delayDisplay(
-                message="""
-This module requires Python package "supervisely" to be installed.
-It will be installed automatically now.
+        # Check and restore libraries in case of unsuccessful installation of the Supervisely package.
+        # Supervisely package will be uninstalled if you confirm restoring the previous versions of the libraries.
+        check_and_restore_libraries(self)
 
-Slicer will be restarted after installation.
-""",
-                autoCloseMsec=4000,
-            )
-            slicer.util.pip_install("supervisely==6.73.58")
-            slicer.util.restart()
+        # Set self.ready_to_start = True if supervisely module is imported successfully.
+        import_supervisely(self)
+
+        # If supervisely module is not imported successfully, block the widget.
+        if not self.ready_to_start:
+            block_widget(self)
+            return
 
         if not os.path.exists(ENV_FILE_PATH):
             with open(ENV_FILE_PATH, "w") as f:
@@ -143,14 +144,15 @@ Slicer will be restarted after installation.
 
     def enter(self) -> None:
         """Called each time the user opens this module."""
-        slicer.util.setDataProbeVisible(False)
-        activeModule = dotenv.get_key(ENV_FILE_PATH, "ACTIVE_SLY_MODULE")
-        if not activeModule:
-            dotenv.set_key(ENV_FILE_PATH, "ACTIVE_SLY_MODULE", f"{self.moduleName}")
-        elif activeModule != self.moduleName:
-            slicer.mrmlScene.Clear()
-            slicer.util.reloadScriptedModule(activeModule)
-            dotenv.set_key(ENV_FILE_PATH, "ACTIVE_SLY_MODULE", f"{self.moduleName}")
+        if self.ready_to_start:
+            slicer.util.setDataProbeVisible(False)
+            activeModule = dotenv.get_key(ENV_FILE_PATH, "ACTIVE_SLY_MODULE")
+            if not activeModule:
+                dotenv.set_key(ENV_FILE_PATH, "ACTIVE_SLY_MODULE", f"{self.moduleName}")
+            elif activeModule != self.moduleName:
+                slicer.mrmlScene.Clear()
+                slicer.util.reloadScriptedModule(activeModule)
+                dotenv.set_key(ENV_FILE_PATH, "ACTIVE_SLY_MODULE", f"{self.moduleName}")
 
     def exit(self) -> None:
         """Called each time the user opens a different module."""
