@@ -89,9 +89,9 @@ class labelingJobsReviewWidget(ScriptedLoadableModuleWidget):
         """Called when the user opens the module the first time and the widget is initialized."""
         ScriptedLoadableModuleWidget.setup(self)
 
-        # Check and restore libraries in case of unsuccessful installation of the Supervisely package.
-        # Supervisely package will be uninstalled if you confirm restoring the previous versions of the libraries.
-        check_and_restore_libraries(self)
+        # Check if packages are reinstalled with another versions during the Supervisely module installation and ask user to restore them if needed.
+        # Supervisely package will be uninstalled if you confirm restoring the previous versions.
+        check_and_restore_libraries()
 
         # Set self.ready_to_start = True if supervisely module is imported successfully.
         import_supervisely(self)
