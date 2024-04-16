@@ -59,7 +59,7 @@ This module allows reviewers to make changes to annotations, accept or reject th
 
    Organize Team and Workspace, prepare Project, import data, create Labeling Job.
 
-   <iframe width="560" height="315" src="https://www.youtube.com/embed/YwNHbvyZL7Q" frameborder="0" allowfullscreen></iframe>
+   [Video Explanation how it works](https://www.youtube.com/watch?v=YwNHbvyZL7Q)
 
 2. Go to the 3D Slicer and navigate to the "Supervisely" section in the list of available modules and select the required module.
 
