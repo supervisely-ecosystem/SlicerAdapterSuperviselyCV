@@ -1,6 +1,6 @@
 <div align="center" markdown>
 
-# Connect To Supervisely Computer Vision platform
+# Connect To <span style="color:#fd4685">**Supervisely**</span> Computer Vision platform
 
 <p align="center">
   <a href="#Dependencies">Dependencies</a> •
@@ -16,9 +16,9 @@
 
 </div>
 
-A 3D Slicer extension designed to organize and manage the work of labeling teams on the Supervisely computer vision platform.
+A 3D Slicer extension designed to organize and manage the work of labeling teams on the <span style="color:#fd4685">**Supervisely**</span> computer vision platform.
 
-This extension allows you to work with Labeling Jobs just as you would on the Supervisely platform, but within the familiar environment of 3D Slicer. Labeling Jobs is a powerful tool for efficiently organizing and distributing data annotation tasks within a team. It ensures annotators work on well-defined portions of the dataset, follow consistent guidelines, and contribute to the project's success while maintaining data quality and accuracy. It's a critical component of effective team coordination in data annotation efforts.
+This extension allows you to work with Labeling Jobs just as you would on the <span style="color:#fd4685">**Supervisely**</span> platform, but within the familiar environment of 3D Slicer. Labeling Jobs is a powerful tool for efficiently organizing and distributing data annotation tasks within a team. It ensures annotators work on well-defined portions of the dataset, follow consistent guidelines, and contribute to the project's success while maintaining data quality and accuracy. It's a critical component of effective team coordination in data annotation efforts.
 
 You can read more about Labeling Jobs in our blog post [Mastering Labeling Jobs: Your Ultimate Guide](https://supervisely.com/blog/labeling-jobs/).
 
@@ -55,24 +55,37 @@ This module allows reviewers to make changes to annotations, accept or reject th
 
 ## Basic Tutorial
 
-1. Navigate to the "Supervisely" section in the list of available modules and select the required module.
-2. In the Authentication tab, enter the required data
+1. If you are new to <span style="color:#fd4685">**Supervisely**</span>, please learn how our platform works and start at [this point](https://docs.supervisely.com/).
 
-   <img src="./Images/auth.png" style="width:400px">
+   Organize Team and Workspace, prepare Project, import data, create Labeling Job.
+
+   <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/YwNHbvyZL7Q" frameborder="0" allowfullscreen></iframe> -->
+
+   <video width="100%" src="https://www.youtube.com/embed/YwNHbvyZL7Q" controls="controls"></video>
+
+2. Go to the 3D Slicer and navigate to the "Supervisely" section in the list of available modules and select the required module.
+
+3. In the Authentication tab, enter the required data
+
+   Here you can specify on which <span style="color:#fd4685">**Supervisely**</span> server your data is located, as well as enter account credentials to connect to the server.
+
+   <img src="./Images/auth.png" style="width:340px">
+
+   If you are using Community Edition instance - use [app.supervisely.com](https://app.supervisely.com/) server address. <span style="color:#fd4685">**Supervisely**</span> Enterprise users use their own instance addresses.
 
    You can save your authentication by selecting the required option, or you can remain logged in for this work session only.
 
-3. Select the team in which Labeling Jobs are waiting for you to annotate. Only the teams you are a member of will be listed.
-4. Select Labeling Job from the list. Only those Jobs whose status is `Pending` or `In progress`, and you are the annotator for them, are displayed in the list.
-5. Click Start labeling. The data will be downloaded from the server and saved in the `Working directory` which can be adjusted in the Settings section.
-6. Select the Volume you want to work with. Segmentations will be automatically created to represent classes of annotation objects.
+4. Select the team in which Labeling Jobs are waiting for you to annotate. Only the teams you are a member of will be listed.
+5. Select Labeling Job from the list. Only those Jobs whose status is `Pending` or `In progress`, and you are the annotator for them, are displayed in the list.
+6. Click Start labeling. The data will be downloaded from the server and saved in the `Working directory` which can be adjusted in the Settings section.
+7. Select the Volume you want to work with. Segmentations will be automatically created to represent classes of annotation objects.
 
    <img src="./Images/subject_hierarchy.png" style="width:400px">
 
-7. To create a new object, simply select any of the Segmentation and add a new Segment. When creating objects, it is not necessary to name them and change their color, as they will be converted to class names and colors once they are uploaded to the server. If during the creation process, you need to change the name or color for convenience, you can do so without worrying about how it will be saved.
-8. Add the necessary tags for Volume.
-9. If your work on this Volume is complete, click the `Mark as Done` button. This will save your work and designate the Volume with the necessary status, which will help not only you when switching between Volumes, but also the reviewer to realize that the annotation of this Volume is complete.
-10. Once the work in this Labeling Job is complete, click on the `Submit for review` button. The current Labeling Job will change status to `On review` and drop from the list of available jobs. It is now ready for the review process.
+8. To create a new object, simply select any of the Segmentation and add a new Segment. When creating objects, it is not necessary to name them and change their color, as they will be converted to class names and colors once they are uploaded to the server. If during the creation process, you need to change the name or color for convenience, you can do so without worrying about how it will be saved.
+9. Add the necessary tags for Volume.
+10. If your work on this Volume is complete, click the `Mark as Done` button. This will save your work and designate the Volume with the necessary status, which will help not only you when switching between Volumes, but also the reviewer to realize that the annotation of this Volume is complete.
+11. Once the work in this Labeling Job is complete, click on the `Submit for review` button. The current Labeling Job will change status to `On review` and drop from the list of available jobs. It is now ready for the review process.
 
 ## Module Settings and Options
 
