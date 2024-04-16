@@ -24,6 +24,7 @@ except ModuleNotFoundError:
 
 from moduleLib import (
     InputDialog,
+    import_supervisely,
     log_method_call,
     log_method_call_args,
     segmentClass,
@@ -54,7 +55,7 @@ class labelingJobsAnnotation(ScriptedLoadableModule):
             """
 This extension module designed to organize and manage the work of labeling teams on the <a href='https://supervisely.com/'>Supervisely</a> computer vision platform.
 Enables annotators to annotate with all the conveniences and submit annotated data to the platform, set statuses for completed volumes, and submit Labeling Jobs for review.
-More information about the module can be found in the <a href='https://github.com/supervisely-ecosystem/SlicerAdapterSuperviselyCV/blob/master/README.md'>documentation</a>.
+More information about the module can be found in the <a href='https://github.com/supervisely-ecosystem/SlicerConnectToSupervisely/blob/master/README.md'>documentation</a>.
 """
         )
         self.parent.acknowledgementText = _(
@@ -78,25 +79,27 @@ class labelingJobsAnnotationWidget(ScriptedLoadableModuleWidget):
         """Called when the user opens the module the first time and the widget is initialized."""
         ScriptedLoadableModuleWidget.__init__(self, parent)
         self.logic = None
+        self.ready_to_start = False
 
     def setup(self) -> None:
         """Called when the user opens the module the first time and the widget is initialized."""
         ScriptedLoadableModuleWidget.setup(self)
 
-        try:
-            import supervisely
-        except ModuleNotFoundError:
-            slicer.util.delayDisplay(
-                message="""
-This module requires Python package "supervisely" to be installed.
-It will be installed automatically now.
+        # Set self.ready_to_start = True if supervisely module is installed
+        import_supervisely(self)
 
-Slicer will be restarted after installation.
-""",
-                autoCloseMsec=4000,
+        if not self.ready_to_start:
+            errorLabel = qt.QLabel(
+                "The module could not be loaded because the Supervisely SDK is not installed."
             )
-            slicer.util.pip_install("supervisely==6.73.58")
-            slicer.util.restart()
+            errorLabel.setStyleSheet("border: 1px solid black; font-size: 14px;")
+            while self.layout.count():
+                child = self.layout.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+            self.layout.addWidget(errorLabel)
+            self.layout.parent().adjustSize()
+            return
 
         if not os.path.exists(ENV_FILE_PATH):
             with open(ENV_FILE_PATH, "w") as f:
@@ -139,14 +142,15 @@ Slicer will be restarted after installation.
 
     def enter(self) -> None:
         """Called each time the user opens this module."""
-        slicer.util.setDataProbeVisible(False)
-        activeModule = dotenv.get_key(ENV_FILE_PATH, "ACTIVE_SLY_MODULE")
-        if not activeModule:
-            dotenv.set_key(ENV_FILE_PATH, "ACTIVE_SLY_MODULE", f"{self.moduleName}")
-        elif activeModule != self.moduleName:
-            slicer.mrmlScene.Clear()
-            slicer.util.reloadScriptedModule(activeModule)
-            dotenv.set_key(ENV_FILE_PATH, "ACTIVE_SLY_MODULE", f"{self.moduleName}")
+        if self.ready_to_start:
+            slicer.util.setDataProbeVisible(False)
+            activeModule = dotenv.get_key(ENV_FILE_PATH, "ACTIVE_SLY_MODULE")
+            if not activeModule:
+                dotenv.set_key(ENV_FILE_PATH, "ACTIVE_SLY_MODULE", f"{self.moduleName}")
+            elif activeModule != self.moduleName:
+                slicer.mrmlScene.Clear()
+                slicer.util.reloadScriptedModule(activeModule)
+                dotenv.set_key(ENV_FILE_PATH, "ACTIVE_SLY_MODULE", f"{self.moduleName}")
 
     def exit(self) -> None:
         """Called each time the user opens a different module."""

@@ -56,7 +56,7 @@ class labelingJobsReview(ScriptedLoadableModule):
             """
 This extension module designed to organize and manage the work of labeling teams on the <a href='https://supervisely.com/'>Supervisely</a> computer vision platform.
 Allows reviewers to make changes to annotations, accept or reject the work done by annotators, and restart or complete Labeling Jobs.
-More information about the module can be found in the <a href='https://github.com/supervisely-ecosystem/SlicerAdapterSuperviselyCV/blob/master/README.md'>documentation</a>.
+More information about the module can be found in the <a href='https://github.com/supervisely-ecosystem/SlicerConnectToSupervisely/blob/master/README.md'>documentation</a>.
 """
         )
         self.parent.acknowledgementText = _(

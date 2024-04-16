@@ -1,6 +1,6 @@
 <div align="center" markdown>
 
-# Adapter for Supervisely Computer Vision platform
+# Connect To Supervisely Computer Vision platform
 
 <p align="center">
   <a href="#Dependencies">Dependencies</a> •
@@ -11,7 +11,7 @@
 </p>
 
 ![](https://img.shields.io/badge/3D%20Slicer-%205.6.1-C0D4E5)
-![](https://img.shields.io/badge/AdapterSuperviselyCV-0.0.1-FF3C89)
+![](https://img.shields.io/badge/ConnectToSupervisely-0.0.1-FF3C89)
 [![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervisely.com/slack)
 
 </div>

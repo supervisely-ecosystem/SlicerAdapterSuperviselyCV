@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------
-set(MODULE_NAME AdapterSuperviselyCV)
+set(MODULE_NAME ConnectToSupervisely)
 
 #-----------------------------------------------------------------------------
 set(MODULE_PYTHON_SCRIPTS
@@ -17,6 +17,7 @@ set(RESOURCES_FILES
   Resources/Icons/labelingJobsReview.png
   Resources/UI/labelingJobsAnnotation.ui
   Resources/UI/labelingJobsReview.ui
+  Resources/UI/sly_icon.png
   )
 
 set(MODULE_LIB
