@@ -375,6 +375,10 @@ class labelingJobsAnnotationLogic(ScriptedLoadableModuleLogic):
                 self.ui.serverAddress.hide()
                 self.ui.login.hide()
                 self.ui.password.hide()
+                self.ui.serverAddressLabel.hide()
+                self.ui.loginLabel.hide()
+                self.ui.passwordLabel.hide()
+                self.ui.emptySpaceRememberLogin.hide()
                 self.ui.rememberLogin.hide()
                 self.ui.connectButton.text = "Disconnect"
                 self._activateTeamSelection()
@@ -399,6 +403,10 @@ class labelingJobsAnnotationLogic(ScriptedLoadableModuleLogic):
             self.ui.serverAddress.show()
             self.ui.login.show()
             self.ui.password.show()
+            self.ui.serverAddressLabel.show()
+            self.ui.loginLabel.show()
+            self.ui.passwordLabel.show()
+            self.ui.emptySpaceRememberLogin.show()
             self.ui.rememberLogin.show()
             self.ui.rememberLogin.enabled = True
             dotenv.set_key(ENV_FILE_PATH, "KEEP_LOGGED", "False")
@@ -426,6 +434,10 @@ class labelingJobsAnnotationLogic(ScriptedLoadableModuleLogic):
             self.ui.serverAddress.hide()
             self.ui.login.hide()
             self.ui.password.hide()
+            self.ui.serverAddressLabel.hide()
+            self.ui.loginLabel.hide()
+            self.ui.passwordLabel.hide()
+            self.ui.emptySpaceRememberLogin.hide()
             self.ui.rememberLogin.hide()
             self.ui.loginName.text = f"You are logged in Supervisely as {self.userName}"
             self.ui.loginName.show()
@@ -839,6 +851,7 @@ Do you want to continue?"""
     @log_method_call
     def createTagButtons(self):
         self.tagMetas = self.projectMeta.tag_metas.items()
+        self._createdButtons = 0
         for tagMeta in self.tagMetas:
             if (
                 tagMeta.name in self.activeJob.tags_to_label
@@ -859,7 +872,8 @@ Do you want to continue?"""
                 button.setIcon(self._createColorIcon(tagMeta.color))
                 button.setFixedHeight(height)
                 self.volume.tagButtons.append(button)
-        if len(self.tagMetas) != 0:
+                self._createdButtons += 1
+        if self._createdButtons > 0:
             self.ui.noneTags_left.hide()
 
     @log_method_call
@@ -1024,7 +1038,8 @@ Do you want to continue?"""
         self.ui.confirmButton.setEnabled(True)
         self.ui.submitButton.setEnabled(True)
         self.ui.saveButton.setEnabled(True)
-        self.ui.tags.setEnabled(True)
+        if self._createdButtons > 0:
+            self.ui.tags.setEnabled(True)
 
     @log_method_call
     def _deactivateJobButtons(self, deactivateSubmit=False) -> None:
@@ -1035,6 +1050,10 @@ Do you want to continue?"""
             self.ui.submitButton.setEnabled(False)
 
     # --------------------------------------- Technical Methods -------------------------------------- #
+
+    @log_method_call_args
+    def increment_progress_bar(self, value):
+        self.ui.progressBar.setValue(self.ui.progressBar.value + value)
 
     @log_method_call_args
     def _dowloadProject(self, downloadVolumes=True) -> None:
@@ -1049,7 +1068,7 @@ Do you want to continue?"""
             self.savePath,
             [self.activeJob.dataset_id],
             download_volumes=downloadVolumes,
-            progress_cb=self.ui.progressBar.setValue,
+            progress_cb=self.increment_progress_bar,
         )
         self.api.pop_header("x-job-id")
         self.ui.progressBar.reset()
