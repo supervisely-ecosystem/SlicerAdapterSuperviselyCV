@@ -71,7 +71,11 @@ This module allows reviewers to make changes to annotations, accept or reject th
 
    If you are using Community Edition instance - use [app.supervisely.com](https://app.supervisely.com/) server address. <span style="color:#fd4685">**Supervisely**</span> Enterprise users use their own instance addresses.
 
-   You can save your authentication by selecting the required option, or you can remain logged in for this work session only.
+   You can save your authentication by ticking `Remember login` checkbox,
+
+   <img src="./Images/auth_r.png" style="width:400px">
+
+   or you can remain logged in for this work session only.
 
 4. Select the team in which Labeling Jobs are waiting for you to annotate. Only the teams you are a member of will be listed.
 5. Select Labeling Job from the list. Only those Jobs whose status is `Pending` or `In progress`, and you are the annotator for them, are displayed in the list.
