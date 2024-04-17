@@ -119,10 +119,13 @@ class labelingJobsAnnotationWidget(ScriptedLoadableModuleWidget):
         # Create logic class. Logic implements all computations that should be possible to run
         # in batch mode, without a graphical user interface.
         self.logic = labelingJobsAnnotationLogic(self.ui)
+
+        # Configure default UI state
         self.logic.configureUI()
 
         # Buttons
         self.ui.connectButton.connect("clicked(bool)", self.onConnectButton)
+        self.ui.RefreshJobs.connect("clicked(bool)", self.onRefreshJobsButton)
         self.ui.startJobButton.connect("clicked(bool)", self.onStartJobButton)
         self.ui.saveButton.connect("clicked(bool)", self.onSaveButton)
         self.ui.confirmButton.connect("clicked(bool)", self.onConfirmButton)
@@ -165,6 +168,8 @@ class labelingJobsAnnotationWidget(ScriptedLoadableModuleWidget):
     def onSelectTeam(self) -> None:
         """Run processing when user change "Team" in selector."""
         with slicer.util.tryWithErrorDisplay(_("Failed to select Team."), waitCursor=True):
+            index = self.ui.teamSelector.findText("Select...")
+            self.ui.teamSelector.removeItem(index)
             if self.logic.savePath and os.path.exists(self.logic.savePath):
                 if self.logic.volume and slicer.util.confirmYesNoDisplay(
                     "Do you want to save changes before select another team?"
@@ -180,11 +185,15 @@ class labelingJobsAnnotationWidget(ScriptedLoadableModuleWidget):
                 self.logic.volume = None
             self.logic.getJobs()
             self.ui.workingDirButton.setEnabled(True)
+            self.ui.activeJob.setChecked(False)
+            self.ui.activeJob.setEnabled(False)
 
     @log_method_call
     def onSelectJob(self) -> None:
         """Run processing when user change "Job" in selector."""
         with slicer.util.tryWithErrorDisplay(_("Failed to select Job."), waitCursor=True):
+            index = self.ui.jobSelector.findText("Select...")
+            self.ui.jobSelector.removeItem(index)
             if self.logic.savePath and os.path.exists(self.logic.savePath):
                 if self.logic.volume and slicer.util.confirmYesNoDisplay(
                     "Do you want to save changes before select another job?"
@@ -203,6 +212,12 @@ class labelingJobsAnnotationWidget(ScriptedLoadableModuleWidget):
             self.ui.tags.setEnabled(False)
             self.ui.tags.setChecked(False)
             self.ui.workingDirButton.setEnabled(True)
+
+    @log_method_call
+    def onRefreshJobsButton(self) -> None:
+        """Run processing when user clicks "Refresh Jobs List" button."""
+        with slicer.util.tryWithErrorDisplay(_("Failed to refresh Jobs list."), waitCursor=True):
+            self.logic.getJobs(refresh=True)
 
     @log_method_call
     def onStartJobButton(self) -> None:
@@ -224,6 +239,8 @@ class labelingJobsAnnotationWidget(ScriptedLoadableModuleWidget):
         with slicer.util.tryWithErrorDisplay(
             _("Failed to load volumes with annotations."), waitCursor=True
         ):
+            index = self.ui.volumeSelector.findText("Select...")
+            self.ui.volumeSelector.removeItem(index)
             if (
                 self.ui.autoSaveVolume.isChecked()
                 and self.logic.volume
@@ -422,8 +439,11 @@ class labelingJobsAnnotationLogic(ScriptedLoadableModuleLogic):
             self.ui.connectButton.text = "Disconnect"
             self._activateTeamSelection()
 
-    @log_method_call
-    def getJobs(self) -> None:
+    @log_method_call_args
+    def getJobs(self, refresh: bool = False) -> None:
+        if refresh:
+            currentSelection = self.ui.jobSelector.currentText
+        self.ui.jobSelector.blockSignals(True)
         self.activeTeam = self._getItemFromSelector(self.teamList, self.ui.teamSelector.currentText)
         try:
             self.jobList = self.api.labeling_job.get_list(
@@ -435,13 +455,22 @@ class labelingJobsAnnotationLogic(ScriptedLoadableModuleLogic):
             raise e
         self._filterVolumeJobs()
         self.ui.jobSelector.clear()
-        if len(self.jobList) != 0:
+        self.ui.jobSelector.addItem("Select...")
+        if not refresh:
             self.ui.jobSelector.currentText = "Select..."
+        if len(self.jobList) != 0:
             self.ui.jobSelector.addItems([job.name for job in self.jobList])
+            if refresh:
+                self.ui.jobSelector.currentText = currentSelection
+                if not self.ui.jobSelector.currentText == "Select...":
+                    index = self.ui.jobSelector.findText("Select...")
+                    self.ui.jobSelector.removeItem(index)
             self.ui.jobSelector.setEnabled(True)
         else:
+            self.ui.jobSelector.addItem("No jobs available")
             self.ui.jobSelector.currentText = "No jobs available"
             self.ui.jobSelector.setEnabled(False)
+        self.ui.jobSelector.blockSignals(False)
 
     @log_method_call
     def changeLabelingButtonState(self) -> None:
@@ -456,8 +485,8 @@ class labelingJobsAnnotationLogic(ScriptedLoadableModuleLogic):
     @log_method_call
     def setActiveJob(self) -> None:
         self.activeJob = self._getItemFromSelector(self.jobList, self.ui.jobSelector.currentText)
-        self.ui.activeJob.setEnabled(False)
         self.ui.activeJob.setChecked(False)
+        self.ui.activeJob.setEnabled(False)
 
     @log_method_call
     def fulfillInfo(self) -> None:
@@ -505,11 +534,12 @@ Do you want to continue?"""
         volumes = [sly.fs.get_file_name_with_ext(volume) for volume in volumes]
         self.ui.volumeSelector.blockSignals(True)
         self.ui.volumeSelector.clear()
+        self.ui.volumeSelector.addItem("Select...")
+        self.ui.volumeSelector.currentText = "Select..."
         self.ui.volumeSelector.addItems(volumes)
         self._setVolumeIcon()
         self._setProgressInfo()
         self.ui.volumeSelector.blockSignals(False)
-        self.ui.volumeSelector.currentText = "Select..."
         self.ui.volumeSelector.enabled = True
         self.ui.startJobButton.setEnabled(False)
         self.ui.activeJob.setEnabled(True)
@@ -961,9 +991,12 @@ Do you want to continue?"""
         self.ui.progressBar.hide()
         self.ui.teamJobs.setChecked(True)
         self.ui.teamJobs.setEnabled(True)
+        self.ui.teamSelector.addItem("Select...")
+        self.ui.jobSelector.addItem("Select...")
         self.teamList = self.api.team.get_list()
         self.ui.teamSelector.addItems([team.name for team in self.teamList])
         self.ui.teamSelector.currentText = "Select..."
+        self.ui.jobSelector.currentText = "Select..."
         self.ui.teamSelector.setEnabled(True)
         self.ui.jobSelector.setEnabled(False)
 
@@ -972,15 +1005,17 @@ Do you want to continue?"""
         self.ui.teamSelector.blockSignals(True)
         self.ui.jobSelector.blockSignals(True)
         self.ui.teamSelector.clear()
+        self.ui.teamSelector.addItem("Select...")
         self.ui.teamSelector.currentText = "Select..."
         self.ui.teamSelector.setEnabled(False)
         self.ui.jobSelector.clear()
+        self.ui.jobSelector.addItem("Select...")
         self.ui.jobSelector.currentText = "Select..."
         self.ui.jobSelector.setEnabled(False)
         self.ui.teamJobs.setEnabled(False)
         self.ui.teamJobs.setChecked(False)
-        self.ui.activeJob.setEnabled(False)
         self.ui.activeJob.setChecked(False)
+        self.ui.activeJob.setEnabled(False)
         self.ui.teamSelector.blockSignals(False)
         self.ui.jobSelector.blockSignals(False)
 
