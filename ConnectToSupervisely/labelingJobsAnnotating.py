@@ -38,10 +38,10 @@ from moduleLib import (
 ENV_FILE_PATH = os.path.join(Path.home(), "supervisely_slicer.env")
 DEFAULT_WORK_DIR = os.path.join(Path.home(), "supervisely_slicer_data")
 
-# ------------------------------------ labelingJobsAnnotation ------------------------------------ #
+# ------------------------------------ labelingJobsAnnotating ------------------------------------ #
 
 
-class labelingJobsAnnotation(ScriptedLoadableModule):
+class labelingJobsAnnotating(ScriptedLoadableModule):
     """Uses ScriptedLoadableModule base class, available at:
     https://github.com/Slicer/Slicer/blob/main/Base/Python/slicer/ScriptedLoadableModule.py
     """
@@ -69,10 +69,10 @@ and Steve Pieper, Isomics, Inc. and was partially funded by NIH grant 3P41RR0132
         )
 
 
-# --------------------------------- LabelingJobsAnnotationWidget --------------------------------- #
+# --------------------------------- labelingJobsAnnotatingWidget --------------------------------- #
 
 
-class labelingJobsAnnotationWidget(ScriptedLoadableModuleWidget):
+class labelingJobsAnnotatingWidget(ScriptedLoadableModuleWidget):
     """Uses ScriptedLoadableModuleWidget base class, available at:
     https://github.com/Slicer/Slicer/blob/main/Base/Python/slicer/ScriptedLoadableModule.py
     """
@@ -107,7 +107,7 @@ class labelingJobsAnnotationWidget(ScriptedLoadableModuleWidget):
 
         # Load widget from .ui file (created by Qt Designer).
         # Additional widgets can be instantiated manually and added to self.layout.
-        uiWidget = slicer.util.loadUI(self.resourcePath("UI/labelingJobsAnnotation.ui"))
+        uiWidget = slicer.util.loadUI(self.resourcePath("UI/labelingJobsAnnotating.ui"))
         self.layout.addWidget(uiWidget)
         self.ui = slicer.util.childWidgetVariables(uiWidget)
 
@@ -118,7 +118,7 @@ class labelingJobsAnnotationWidget(ScriptedLoadableModuleWidget):
 
         # Create logic class. Logic implements all computations that should be possible to run
         # in batch mode, without a graphical user interface.
-        self.logic = labelingJobsAnnotationLogic(self.ui)
+        self.logic = labelingJobsAnnotatingLogic(self.ui)
 
         # Configure default UI state
         self.logic.configureUI()
@@ -187,6 +187,7 @@ class labelingJobsAnnotationWidget(ScriptedLoadableModuleWidget):
             self.ui.workingDirButton.setEnabled(True)
             self.ui.activeJob.setChecked(False)
             self.ui.activeJob.setEnabled(False)
+            self.ui.RefreshJobs.setEnabled(True)
 
     @log_method_call
     def onSelectJob(self) -> None:
@@ -320,10 +321,10 @@ Do you want to continue?"""
         self.logic.skipSegmentStatusCheck = self.ui.skipSegmentStatusCheck.isChecked()
 
 
-# ---------------------------------- LabelingJobsAnnotationLogic --------------------------------- #
+# ---------------------------------- labelingJobsAnnotatingLogic --------------------------------- #
 
 
-class labelingJobsAnnotationLogic(ScriptedLoadableModuleLogic):
+class labelingJobsAnnotatingLogic(ScriptedLoadableModuleLogic):
     """This class should implement all the actual
     computation done by your module.  The interface
     should be such that other python code can import
@@ -384,6 +385,7 @@ class labelingJobsAnnotationLogic(ScriptedLoadableModuleLogic):
                 self._activateTeamSelection()
         else:
             self.ui.loginName.hide()
+        self.ui.RefreshJobs.setEnabled(False)
         self.ui.startJobButton.setEnabled(False)
         self.ui.workingDirButton.setFixedHeight(26)
 
