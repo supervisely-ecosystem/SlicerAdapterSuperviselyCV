@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------
-set(MODULE_NAME AdapterSuperviselyCV)
+set(MODULE_NAME ConnectToSupervisely)
 
 #-----------------------------------------------------------------------------
 set(MODULE_PYTHON_SCRIPTS
-  labelingJobsAnnotation.py
-  labelingJobsReview.py
+  labelingJobsAnnotating.py
+  labelingJobsReviewing.py
   )
 
 set(RESOURCES_FILES
@@ -13,10 +13,11 @@ set(RESOURCES_FILES
   Resources/Icons/none.svg
   Resources/Icons/accepted.svg
   Resources/Icons/rejected.svg
-  Resources/Icons/labelingJobsAnnotation.png
-  Resources/Icons/labelingJobsReview.png
-  Resources/UI/labelingJobsAnnotation.ui
-  Resources/UI/labelingJobsReview.ui
+  Resources/Icons/labelingJobsAnnotating.png
+  Resources/Icons/labelingJobsReviewing.png
+  Resources/UI/labelingJobsAnnotating.ui
+  Resources/UI/labelingJobsReviewing.ui
+  Resources/UI/sly_icon.png
   )
 
 set(MODULE_LIB

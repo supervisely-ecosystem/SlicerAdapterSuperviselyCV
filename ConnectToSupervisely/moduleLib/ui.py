@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Literal
 
 import qt
@@ -91,3 +92,85 @@ class InputDialog(qt.QDialog):
         msg.move(qt.QCursor.pos())
         qt.QTimer.singleShot(duration, msg.close)
         msg.exec_()
+
+
+class SuperviselyDialog(qt.QDialog):
+    def __init__(
+        self,
+        message,
+        type: Literal["info", "error", "confirm", "delay"] = "info",
+        delay: int = 3000,
+        parent=None,
+    ):
+        super(SuperviselyDialog, self).__init__(parent)
+        self.setWindowFlags(self.windowFlags() & ~qt.Qt.WindowContextHelpButtonHint)
+        self.setWindowTitle("Information")
+        if type == "error":
+            self.setWindowTitle("Error")
+        elif type == "confirm":
+            self.setWindowTitle("Confirmation")
+        elif type == "delay":
+            qt.QTimer.singleShot(delay, self.close)
+        moduleDir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+        iconPath = os.path.join(moduleDir, "Resources", "Icons", "supervisely.svg")
+        self.setWindowIcon(qt.QIcon(iconPath))
+        layout = qt.QVBoxLayout(self)
+        layout.setContentsMargins(20, 20, 20, 20)
+        message = message.replace("\n", "<br>")
+        self.label = qt.QLabel(message)
+        self.label.setTextFormat(qt.Qt.RichText)
+        self.label.setTextInteractionFlags(qt.Qt.TextBrowserInteraction)
+        self.label.setOpenExternalLinks(True)
+        layout.addWidget(self.label)
+        buttonLayout = qt.QHBoxLayout()
+        buttonLayout.addItem(
+            qt.QSpacerItem(20, 40, qt.QSizePolicy.Expanding, qt.QSizePolicy.Minimum)
+        )
+        if type != "delay":
+            if type == "confirm":
+                self.button = qt.QPushButton("Yes")
+                self.button.clicked.connect(self.on_ok_clicked)
+                buttonLayout.addWidget(self.button)
+                self.cancelButton = qt.QPushButton("No")
+                self.cancelButton.clicked.connect(self.on_cancel_clicked)
+                buttonLayout.addWidget(self.cancelButton)
+            else:
+                self.button = qt.QPushButton("OK")
+                self.button.clicked.connect(self.on_ok_clicked)
+                buttonLayout.addWidget(self.button)
+            layout.addLayout(buttonLayout)
+
+        self.setLayout(layout)
+
+        self.adjustSize()
+        self.exec_()
+
+    def on_ok_clicked(self):
+        self.decision = True
+        self.close()
+
+    def on_cancel_clicked(self):
+        self.decision = False
+        self.close()
+
+    def return_decision(self):
+        return self.decision
+
+    def __bool__(self):
+        return self.return_decision()
+
+
+def block_widget(widget, text: str = None):
+    if text is None:
+        text = "The module could not be loaded because the <a href='https://pypi.org/project/supervisely/'>Supervisely SDK</a> is not installed."
+    errorLabel = qt.QLabel(text)
+    errorLabel.setTextFormat(qt.Qt.RichText)
+    errorLabel.setTextInteractionFlags(qt.Qt.TextBrowserInteraction)
+    errorLabel.setOpenExternalLinks(True)
+    errorLabel.setStyleSheet("border: 4px solid black; font-size: 14px; ")
+    errorLabel.setAlignment(qt.Qt.AlignCenter)
+    while widget.layout.count():
+        child = widget.layout.takeAt(0)
+        if child.widget():
+            child.widget().deleteLater()
+    widget.layout.addWidget(errorLabel)
