@@ -252,7 +252,7 @@
             </item>
             <item>
               <layout class="QGridLayout" name="teamJobsLayout_3">
-                <item row="1" column="2">
+                <item row="1" column="4">
                   <widget class="QPushButton" name="startJobButton">
                     <property name="sizePolicy">
                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -261,12 +261,38 @@
                       </sizepolicy>
                     </property>
                     <property name="text">
-                      <string>Start review</string>
+                      <string>Start Review 🔍</string>
+                    </property>
+                  </widget>
+                </item>
+                <item row="1" column="3">
+                  <widget class="QPushButton" name="syncCurrentJobButton">
+                    <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                      </sizepolicy>
+                    </property>
+                    <property name="text">
+                      <string>Sync Job 🔃</string>
+                    </property>
+                  </widget>
+                </item>
+                <item row="1" column="2">
+                  <widget class="QLabel" name="emptySpaceJobs_2">
+                    <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                      </sizepolicy>
+                    </property>
+                    <property name="text">
+                      <string />
                     </property>
                   </widget>
                 </item>
                 <item row="1" column="1">
-                  <widget class="QPushButton" name="RefreshJobs">
+                  <widget class="QPushButton" name="refreshJobsButton">
                     <property name="sizePolicy">
                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                         <horstretch>0</horstretch>
@@ -279,7 +305,23 @@
                   </widget>
                 </item>
                 <item row="1" column="0">
-                  <widget class="QLabel" name="emptySpace">
+                  <widget class="QLabel" name="emptySpaceJobs_1">
+                    <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                      </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                      <size>
+                        <width>38</width>
+                      </size>
+                    </property>
+                    <property name="maximumSize">
+                      <size>
+                        <width>38</width>
+                      </size>
+                    </property>
                     <property name="text">
                       <string />
                     </property>
@@ -645,7 +687,7 @@
                       </sizepolicy>
                     </property>
                     <property name="text">
-                      <string>Restart Job 🔄️</string>
+                      <string>Restart Job 🔁</string>
                     </property>
                   </widget>
                 </item>

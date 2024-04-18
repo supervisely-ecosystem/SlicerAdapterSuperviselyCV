@@ -125,12 +125,13 @@ class labelingJobsAnnotatingWidget(ScriptedLoadableModuleWidget):
 
         # Buttons
         self.ui.connectButton.connect("clicked(bool)", self.onConnectButton)
-        self.ui.RefreshJobs.connect("clicked(bool)", self.onRefreshJobsButton)
+        self.ui.refreshJobsButton.connect("clicked(bool)", self.onRefreshJobsButton)
         self.ui.startJobButton.connect("clicked(bool)", self.onStartJobButton)
         self.ui.saveButton.connect("clicked(bool)", self.onSaveButton)
         self.ui.confirmButton.connect("clicked(bool)", self.onConfirmButton)
         self.ui.submitButton.connect("clicked(bool)", self.onSubmitButton)
         self.ui.workingDirButton.directoryChanged.connect(self.onWorkingDirButton)
+        self.ui.syncCurrentJobButton.connect("clicked(bool)", self.onSyncCurrentJobButton)
 
         # Lists
         self.ui.teamSelector.currentIndexChanged.connect(self.onSelectTeam)
@@ -187,18 +188,20 @@ class labelingJobsAnnotatingWidget(ScriptedLoadableModuleWidget):
             self.ui.workingDirButton.setEnabled(True)
             self.ui.activeJob.setChecked(False)
             self.ui.activeJob.setEnabled(False)
-            self.ui.RefreshJobs.setEnabled(True)
+            self.ui.refreshJobsButton.setEnabled(True)
+            self.ui.syncCurrentJobButton.setEnabled(False)
 
-    @log_method_call
-    def onSelectJob(self) -> None:
+    @log_method_call_args
+    def onSelectJob(self, sync: bool = False) -> None:
         """Run processing when user change "Job" in selector."""
         with slicer.util.tryWithErrorDisplay(_("Failed to select Job."), waitCursor=True):
             index = self.ui.jobSelector.findText("Select...")
             self.ui.jobSelector.removeItem(index)
             if self.logic.savePath and os.path.exists(self.logic.savePath):
-                if self.logic.volume and slicer.util.confirmYesNoDisplay(
-                    "Do you want to save changes before select another job?"
-                ):
+                text = "Do you want to save changes before select another job?"
+                if sync:
+                    text = "Do you want to save changes before sync current job?"
+                if self.logic.volume and slicer.util.confirmYesNoDisplay(text):
                     self.logic.saveAnnotations()
                     self.logic.uploadAnnObjectChangesToServer()
                     self.logic.uploadTagsChangesToServer()
@@ -219,6 +222,15 @@ class labelingJobsAnnotatingWidget(ScriptedLoadableModuleWidget):
         """Run processing when user clicks "Refresh Jobs List" button."""
         with slicer.util.tryWithErrorDisplay(_("Failed to refresh Jobs list."), waitCursor=True):
             self.logic.getJobs(refresh=True)
+
+    @log_method_call
+    def onSyncCurrentJobButton(self) -> None:
+        """Run processing when user clicks "Sync Current Job" button."""
+        with slicer.util.tryWithErrorDisplay(
+            _("Failed to synchronize current job."), waitCursor=True
+        ):
+            self.onSelectJob(sync=True)
+            self.onStartJobButton()
 
     @log_method_call
     def onStartJobButton(self) -> None:
@@ -385,8 +397,9 @@ class labelingJobsAnnotatingLogic(ScriptedLoadableModuleLogic):
                 self._activateTeamSelection()
         else:
             self.ui.loginName.hide()
-        self.ui.RefreshJobs.setEnabled(False)
+        self.ui.refreshJobsButton.setEnabled(False)
         self.ui.startJobButton.setEnabled(False)
+        self.ui.syncCurrentJobButton.setEnabled(False)
         self.ui.workingDirButton.setFixedHeight(26)
 
     @log_method_call
@@ -475,7 +488,11 @@ class labelingJobsAnnotatingLogic(ScriptedLoadableModuleLogic):
         if len(self.jobList) != 0:
             self.ui.jobSelector.addItems([job.name for job in self.jobList])
             if refresh:
-                self.ui.jobSelector.currentText = currentSelection
+                self.ui.jobSelector.currentText = (
+                    currentSelection
+                    if currentSelection in [job.name for job in self.jobList]
+                    else "Select..."
+                )
                 if not self.ui.jobSelector.currentText == "Select...":
                     index = self.ui.jobSelector.findText("Select...")
                     self.ui.jobSelector.removeItem(index)
@@ -556,6 +573,7 @@ Do you want to continue?"""
         self.ui.volumeSelector.blockSignals(False)
         self.ui.volumeSelector.enabled = True
         self.ui.startJobButton.setEnabled(False)
+        self.ui.syncCurrentJobButton.setEnabled(True)
         self.ui.activeJob.setEnabled(True)
         self.ui.activeJob.setChecked(True)
 
@@ -982,6 +1000,7 @@ Do you want to continue?"""
         if count == 0:
             self.ui.volumeSelector.setEnabled(False)
             self.ui.startJobButton.setEnabled(False)
+            self.ui.syncCurrentJobButton.setEnabled(False)
             self.ui.volumeSelector.currentText = "No volumes available"
             self.ui.confirmButton.setEnabled(False)
             self._deactivateJobButtons()
@@ -1054,7 +1073,7 @@ Do you want to continue?"""
     # --------------------------------------- Technical Methods -------------------------------------- #
 
     @log_method_call_args
-    def increment_progress_bar(self, value):
+    def incrementProgressBar(self, value):
         self.ui.progressBar.setValue(self.ui.progressBar.value + value)
 
     @log_method_call_args
@@ -1070,7 +1089,7 @@ Do you want to continue?"""
             self.savePath,
             [self.activeJob.dataset_id],
             download_volumes=downloadVolumes,
-            progress_cb=self.increment_progress_bar,
+            progress_cb=self.incrementProgressBar,
         )
         self.api.pop_header("x-job-id")
         self.ui.progressBar.reset()

@@ -95,6 +95,13 @@ The tutorial assumes that you already have the module **ConnectToSupervisely** i
 
 6. Click `Start Labeling`. The data will be downloaded from the server and saved in the `Working directory` which can be adjusted in the Settings section.
 
+   During the process, you can use the `Sync Job` button to synchronize with the server:
+
+   - agree to save the current state, then only the modified annotation objects in 3D Slicer (number `3` in the image below) will overwrite the state of the same objects on the server, all other objects will keep their states
+   - refuse to save, then all changes made in 3D Slicer will be reset and the user will receive an updated Labeling Job
+
+     ☝️ Not to forget that if new classes or tags have been added to the project, they should be added in the Labeling Job settings.
+
 7. Select the Volume you want to work with. Segmentations will be automatically created to represent classes of annotation objects.
 
    ![Supervisely representation in 3D Slicer](./Images/subject_hierarchy.png)
