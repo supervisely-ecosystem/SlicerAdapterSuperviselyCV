@@ -116,6 +116,8 @@ The tutorial assumes that you already have the module **ConnectToSupervisely** i
 
 8. To create a new annotation object, simply select any of the Segmentation and add a new Segment. When creating objects, it is not necessary to name them and change their color, as they will be converted to class names and colors once they are uploaded to the server. If during the creation process, you need to change the name or color for convenience, you can do so without worrying about how it will be saved.
 
+   <img src="./Images/new_objects.png" style="width:600px">
+
 9. Add the necessary tags for Volume.
 
    <img src="./Images/active_job.png" style="width:400px">
