@@ -77,15 +77,15 @@ The tutorial assumes that you already have the module **ConnectToSupervisely** i
    To do this, fill in all fields and click `Connect`.
 
    Here you can specify on which <span style="color:#fd4685">**Supervisely**</span> server your data is located, as well as enter account credentials to connect to the server.
-
+   <br>
    <img src="./Images/auth.png" style="width:400px">
 
    If you are using the Community Edition instance - use [app.supervisely.com](https://app.supervisely.com/) server address. <span style="color:#fd4685">**Supervisely**</span> Enterprise users use their instance addresses.
    <br>
    You can save your authentication by ticking `Remember login` checkbox,
-
+   <br>
    <img src="./Images/auth_r.png" style="width:400px">
-
+   <br>
    or you can remain logged in for this work session only.
 
 4. Select the Team in which Labeling Jobs are waiting for you to annotate. Only the Teams you are a member of will be listed.
@@ -108,14 +108,15 @@ The tutorial assumes that you already have the module **ConnectToSupervisely** i
 7. Select the Volume you want to work with. Segmentations will be automatically created to represent classes of annotation objects.
 
    ![Supervisely representation in 3D Slicer](./Images/subject_hierarchy.png)
-
-   `1` Volume: `CTChest.nrrd`
    <br>
-   `2` Supervisely Class: `Tumor` → Slicer Segmentation: `Tumor`
-   <br>
-   `3` Supervisely Annotation Object: `Tumor` → Slicer Segment: `Tumor`
 
-   🤓 object name is always the same as the class name
+   - `1` Volume: `CTChest.nrrd`
+     <br>
+   - `2` Supervisely Class: `Tumor` → Slicer Segmentation: `Tumor`
+     <br>
+   - `3` Supervisely Annotation Object: `Tumor` → Slicer Segment: `Tumor`
+     <br>
+     🤓 object name is always the same as the class name
 
 8. To create a new annotation object, simply select any of the Segmentation and add a new Segment. When creating objects, it is not necessary to name them and change their color, as they will be converted to class names and colors once they are uploaded to the server. If during the creation process, you need to change the name or color for convenience, you can do so without worrying about how it will be saved.
 
