@@ -106,11 +106,13 @@ The tutorial assumes that you already have the module **ConnectToSupervisely** i
 
    ![Supervisely representation in 3D Slicer](./Images/subject_hierarchy.png)
 
-   1. Volume: `CTChest.nrrd`
-   2. Supervisely Class: `Tumor` → Slicer Segmentation: `Tumor`
-   3. Supervisely Annotation Object: `Tumor` → Slicer Segment: `Tumor`
+   `1` Volume: `CTChest.nrrd`
 
-      🤓 object name is always the same as the class name
+   `2` Supervisely Class: `Tumor` → Slicer Segmentation: `Tumor`
+
+   `3` Supervisely Annotation Object: `Tumor` → Slicer Segment: `Tumor`
+
+   🤓 object name is always the same as the class name
 
 8. To create a new annotation object, simply select any of the Segmentation and add a new Segment. When creating objects, it is not necessary to name them and change their color, as they will be converted to class names and colors once they are uploaded to the server. If during the creation process, you need to change the name or color for convenience, you can do so without worrying about how it will be saved.
 
