@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="#Dependencies">Dependencies</a> •
-  <a href="#Labeling-Jobs-Annotation-Module-Preview">Preview</a> •
+  <a href="#Labeling-Jobs-Annotating-Module-Preview">Preview</a> •
   <a href="#Basic-Tutorial">Tutorial</a> •
   <a href="#Module-Settings-and-Options">Module Settings</a> •
   <a href="#Release-Notes">Release Notes</a>  
@@ -79,9 +79,9 @@ The tutorial assumes that you already have the module **ConnectToSupervisely** i
    Here you can specify on which <span style="color:#fd4685">**Supervisely**</span> server your data is located, as well as enter account credentials to connect to the server.
    <br>
    <img src="./Images/auth.png" style="width:400px">
-
-   If you are using the Community Edition instance - use [app.supervisely.com](https://app.supervisely.com/) server address. <span style="color:#fd4685">**Supervisely**</span> Enterprise users use their instance addresses.
    <br>
+   If you are using the Community Edition instance - use [app.supervisely.com](https://app.supervisely.com/) server address. <span style="color:#fd4685">**Supervisely**</span> Enterprise users use their instance addresses.
+
    You can save your authentication by ticking `Remember login` checkbox,
 
    <img src="./Images/auth_r.png" style="width:400px">
