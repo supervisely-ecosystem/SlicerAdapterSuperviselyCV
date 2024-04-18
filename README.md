@@ -83,7 +83,7 @@ The tutorial assumes that you already have the module **ConnectToSupervisely** i
    If you are using the Community Edition instance - use [app.supervisely.com](https://app.supervisely.com/) server address. <span style="color:#fd4685">**Supervisely**</span> Enterprise users use their instance addresses.
    <br>
    You can save your authentication by ticking `Remember login` checkbox,
-   <br>
+
    <img src="./Images/auth_r.png" style="width:400px">
    <br>
    or you can remain logged in for this work session only.
