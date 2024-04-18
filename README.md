@@ -59,20 +59,21 @@ This module allows reviewers to make changes to annotations, accept or reject th
 The tutorial assumes that you already have the module **ConnectToSupervisely** installed.
 
 1. If you are new to <span style="color:#fd4685">**Supervisely**</span>, please learn how our platform works and start at [this point](https://docs.supervisely.com/).
-
-   You can also find a lot of useful information on our [Blog](https://supervisely.com/blog/) and on the [Development Portal](https://developer.supervisely.com/).
-
+   <br>
+   You can also find a lot of useful information on our [Blog](https://supervisely.com/blog/) and on the [Developer Portal](https://developer.supervisely.com/).
+   <br>
    In short, you need to organize Team and Workspace, create Project, import volume data, and create Labeling Job.
 
    [Video explanation of how it works](https://www.youtube.com/watch?v=YwNHbvyZL7Q)
 
 2. Go to the 3D Slicer and navigate to the "Supervisely" section in the list of available modules.
+   <br>
    Select the required module.
-
+   <br>
    You can also search by pressing `CTRL+F` on your keyboard.
 
 3. You need to authorize on the server you are working with.
-
+   <br>
    To do this, fill in all fields and click `Connect`.
 
    Here you can specify on which <span style="color:#fd4685">**Supervisely**</span> server your data is located, as well as enter account credentials to connect to the server.
@@ -80,7 +81,7 @@ The tutorial assumes that you already have the module **ConnectToSupervisely** i
    <img src="./Images/auth.png" style="width:400px">
 
    If you are using the Community Edition instance - use [app.supervisely.com](https://app.supervisely.com/) server address. <span style="color:#fd4685">**Supervisely**</span> Enterprise users use their instance addresses.
-
+   <br>
    You can save your authentication by ticking `Remember login` checkbox,
 
    <img src="./Images/auth_r.png" style="width:400px">
@@ -90,16 +91,18 @@ The tutorial assumes that you already have the module **ConnectToSupervisely** i
 4. Select the Team in which Labeling Jobs are waiting for you to annotate. Only the Teams you are a member of will be listed.
 
 5. Select Labeling Job from the list. Only those Jobs whose status is `Pending` or `In progress`, and you are the annotator for them, are displayed in the list.
-
+   <br>
    You can update the list of available Jobs for the current Team at any time by clicking `Refresh Jobs List`, it won't reset your current workflow.
 
-6. Click `Start Labeling`. The data will be downloaded from the server and saved in the `Working directory` which can be adjusted in the Settings section.
-
+6. Click `Start Labeling`.
+   <br>
+   The data will be downloaded from the server and saved in the `Working directory` which can be adjusted in the Settings section.
+   <br>
    During the process, you can use the `Sync Job` button to synchronize with the server:
 
    - agree to save the current state, then only the modified annotation objects in 3D Slicer (number `3` in the image below) will overwrite the state of the same objects on the server, all other objects will keep their states
    - refuse to save, then all changes made in 3D Slicer will be reset and the user will receive an updated Labeling Job
-
+     <br>
      ☝️ Not to forget that if new classes or tags have been added to the project, they should be added in the Labeling Job settings.
 
 7. Select the Volume you want to work with. Segmentations will be automatically created to represent classes of annotation objects.
@@ -107,9 +110,9 @@ The tutorial assumes that you already have the module **ConnectToSupervisely** i
    ![Supervisely representation in 3D Slicer](./Images/subject_hierarchy.png)
 
    `1` Volume: `CTChest.nrrd`
-
+   <br>
    `2` Supervisely Class: `Tumor` → Slicer Segmentation: `Tumor`
-
+   <br>
    `3` Supervisely Annotation Object: `Tumor` → Slicer Segment: `Tumor`
 
    🤓 object name is always the same as the class name
@@ -137,9 +140,9 @@ The information with the server address and the account token received at the fi
 ### Ignore Segment status on Save
 
 When this setting is checked (default), all segments will be saved regardless of their status.
-
+<br>
 Otherwise, segments with the status `Completed` will be saved, and segments with the status `In progress` will initiate a save request.
-
+<br>
 Segments with all other statuses will not be saved, but their current state in the current scene not change. To reset their state you will need to change the current Volume to another one and get back. Or reload the current Labeling Job. (Local reset will be added in the future)
 
 ⚠️ Deleted segments are deleted on save regardless of settings and statuses.
@@ -173,7 +176,7 @@ The user can configure the working directory where data will be stored locally w
 
 #### v0.0.1 - v0.0.2
 
-☝️ Does not support
+☝️ Does not support:
 
 - recording statistics
 - any other shapes except `Mask 3D`
