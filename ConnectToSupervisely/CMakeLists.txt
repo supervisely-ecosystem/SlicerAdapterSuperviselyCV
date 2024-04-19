@@ -8,16 +8,16 @@ set(MODULE_PYTHON_SCRIPTS
   )
 
 set(RESOURCES_FILES
-  Resources/Icons/done.svg
-  Resources/Icons/label.svg
-  Resources/Icons/none.svg
   Resources/Icons/accepted.svg
-  Resources/Icons/rejected.svg
+  Resources/Icons/done.svg
+  Resources/Icons/label.svg   
   Resources/Icons/labelingJobsAnnotating.png
   Resources/Icons/labelingJobsReviewing.png
+  Resources/Icons/none.svg 
+  Resources/Icons/rejected.svg
+  Resources/Icons/supervisely.svg
   Resources/UI/labelingJobsAnnotating.ui
-  Resources/UI/labelingJobsReviewing.ui
-  Resources/UI/sly_icon.png
+  Resources/UI/labelingJobsReviewing.ui  
   )
 
 set(MODULE_LIB
