@@ -30,6 +30,19 @@ def log_method_call_args(func):
     return wrapper
 
 
+def timer_decorator(func):
+    import time
+
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        print(f"Function {func.__name__} took {end_time - start_time} seconds to run.")
+        return result
+
+    return wrapper
+
+
 def get_installed_libraries_info():
     installed_packages = [(d.metadata["Name"], d.version) for d in distributions()]
     installed_packages_dict = dict(installed_packages)
@@ -54,70 +67,58 @@ def backup_installed_libraries_info(before_installation, after_installation):
         )
 
 
-def check_and_restore_libraries():
+def restore_libraries(button):
     from moduleLib import SuperviselyDialog
 
-    if os.path.exists(RESTORE_LIB_FILE):
-        with open(RESTORE_LIB_FILE, "r") as f:
-            backup_info = json.load(f)
-        updated_libraries = backup_info.get("updated_libraries", {})
-        libraries_list = "\n".join(
-            [
-                f"- [{lib}] Previous version: {updated_libraries[lib]['old_version']}, Current version: {updated_libraries[lib]['new_version']}"
-                for lib in updated_libraries
-            ]
-        )
-        if SuperviselyDialog(
-            f"""Previously installed libraries were updated during the installation of the Supervisely package.
-\n{libraries_list}\n
-Do you want to restore the previous version of the libraries?
-\nSupervisely package will be uninstalled on restore. 3D Slicer will be restarted after the process is finished.""",
-            "confirm",
-        ):
-            slicer.util.pip_uninstall("supervisely")
+    with open(RESTORE_LIB_FILE, "r") as f:
+        backup_info = json.load(f)
+    updated_libraries = backup_info.get("updated_libraries", {})
+    libraries_list = "\n".join(
+        [
+            f"- [{lib}] Previous version: {updated_libraries[lib]['old_version']}, Current version: {updated_libraries[lib]['new_version']}"
+            for lib in updated_libraries
+        ]
+    )
+    if SuperviselyDialog(
+        f"""The following Python libraries will be restored to the previous versions:
+{libraries_list}
 
-            slicer_packages = backup_info.get("before_installation", {})
-            installed_packages = [(d.metadata["Name"], d.version) for d in distributions()]
+Because of this, the <a href='https://pypi.org/project/supervisely/'>Supervisely</a> library will be uninstalled to avoid conflicts and the extension will be disabled.
+After the process is complete, 3D Slicer will be restarted.
+\nDo you want to proceed?""",
+        "confirm",
+    ):
+        slicer.util.pip_uninstall("supervisely")
+        slicer_packages = backup_info.get("before_installation", {})
+        installed_packages = [(d.metadata["Name"], d.version) for d in distributions()]
 
-            for package_name, package_version in installed_packages:
-                if package_name in slicer_packages:
-                    if slicer_packages[package_name] != package_version:
-                        try:
-                            slicer.util.pip_install(
-                                f"{package_name}=={slicer_packages[package_name]}"
-                            )
-                        except Exception as e:
-                            logging.error(
-                                f"Failed to restore {package_name} to {slicer_packages[package_name]} version: {e}"
-                            )
-            os.remove(RESTORE_LIB_FILE)
-            slicer.util.restart()
+        for package_name, package_version in installed_packages:
+            if package_name in slicer_packages:
+                if slicer_packages[package_name] != package_version:
+                    try:
+                        slicer.util.pip_install(f"{package_name}=={slicer_packages[package_name]}")
+                    except Exception as e:
+                        logging.error(
+                            f"Failed to restore {package_name} to {slicer_packages[package_name]} version: {e}"
+                        )
         os.remove(RESTORE_LIB_FILE)
+        slicer.util.restart()
+        button.enabled = False
 
 
 def import_supervisely(module):
     from moduleLib import SuperviselyDialog
 
     try:
-        import supervisely
+        from supervisely import Api
     except ModuleNotFoundError:
-        SuperviselyDialog(
-            """
-This module requires Python package <a href='https://pypi.org/project/supervisely/'>supervisely</a> to be installed.
-It will be installed automatically now.
-
-Slicer will be restarted after installation.
-""",
-            type="delay",
-            delay=4000,
-        )
 
         from importlib.metadata import version
 
-        import requests
         from packaging.requirements import Requirement
         from packaging.specifiers import SpecifierSet
         from packaging.version import Version
+        from requests import get
 
         def get_installed_version(package_name):
             try:
@@ -125,7 +126,7 @@ Slicer will be restarted after installation.
             except Exception:
                 return None
 
-        response = requests.get("https://pypi.org/pypi/supervisely/json")
+        response = get("https://pypi.org/pypi/supervisely/json")
         data = response.json()
 
         supervisely_deps = [
@@ -150,9 +151,11 @@ Slicer will be restarted after installation.
 
         if message:
             if SuperviselyDialog(
-                f"""Conflicting dependencies required by <a href='https://pypi.org/project/supervisely/'>supervisely</a>:
+                f"""
+This module requires Python package <a href='https://pypi.org/project/supervisely/'>Supervisely</a> to be installed.
+But it has conflicting dependencies with the installed packages:
 \n{message}
-Do you want to try to install <a href='https://pypi.org/project/supervisely/'>supervisely</a> package anyway?\n""",
+Do you want to to install <a href='https://pypi.org/project/supervisely/'>Supervisely</a> package anyway?\n""",
                 "confirm",
             ):
                 try:
@@ -163,26 +166,40 @@ Do you want to try to install <a href='https://pypi.org/project/supervisely/'>su
                     slicer.util.restart()
                 except Exception:
                     SuperviselyDialog(
-                        """\nFailed to install <a href='https://pypi.org/project/supervisely/'>supervisely</a> package.
-Please install it manually before opening the module or contact us for help.
-3D Slicer will be restarted now.
-\n<a href='https://supervisely.com/slack/'>Supervisely Slack community</a>""",
+                        """
+Failed to install <a href='https://pypi.org/project/supervisely/'>Supervisely</a> package.
+\nPlease install it manually and resolve conflicts with the dependencies before opening the module or contact us for help.
+<a href='https://supervisely.com/slack/'>Supervisely Slack community</a>
+
+\n3D Slicer will be restarted now automatically.""",
                         "error",
                     )
                     slicer.util.restart()
             else:
                 SuperviselyDialog(
-                    "If you need help with the installation, please contact us.\n\n<a href='https://supervisely.com/slack/'>Supervisely Slack community</a>"
+                    """
+If you need help with the installation, please contact us.
+<a href='https://supervisely.com/slack/'>Supervisely Slack community</a>"""
                 )
         else:
+            SuperviselyDialog(
+                """
+This module requires Python package <a href='https://pypi.org/project/supervisely/'>Supervisely</a> to be installed.
+It will be installed automatically now.
+
+3D Slicer will be restarted after installation.
+""",
+                type="info",
+            )
             try:
                 slicer.util.pip_install("supervisely==6.73.58")
+                slicer.util.restart()
             except Exception:
                 SuperviselyDialog(
-                    """\nFailed to install <a href='https://pypi.org/project/supervisely/'>supervisely</a> package.
+                    """\nFailed to install <a href='https://pypi.org/project/supervisely/'>Supervisely</a> package.
 3D Slicer will be restarted now and the installation will be retried.
-If the problem persists, please install the package manually or contact us for help.
-\n<a href='https://supervisely.com/slack/'>Supervisely Slack community</a>""",
+\nIf the problem persists, please install the package manually or contact us for help.
+<a href='https://supervisely.com/slack/'>Supervisely Slack community</a>""",
                     "error",
                 )
                 slicer.util.restart()
