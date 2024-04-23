@@ -102,6 +102,19 @@ class SuperviselyDialog(qt.QDialog):
         delay: int = 3000,
         parent=None,
     ):
+        """Create a dialog with a message and a button.
+
+        Parameters
+        ----------
+        message : str
+            The message to be displayed.
+        type : Literal["info", "error", "confirm", "delay"], optional
+            The type of the dialog, by default "info".
+        delay : int, optional
+            The delay in milliseconds before the dialog closes, by default 3000.
+        parent : qt.QWidget, optional
+            The parent widget, by default None.
+        """
         super(SuperviselyDialog, self).__init__(parent)
         self.setWindowFlags(self.windowFlags() & ~qt.Qt.WindowContextHelpButtonHint)
         self.setWindowTitle("Information")
@@ -162,7 +175,7 @@ class SuperviselyDialog(qt.QDialog):
 
 def block_widget(widget, text: str = None):
     if text is None:
-        text = "The module could not be loaded because the <a href='https://pypi.org/project/supervisely/'>Supervisely SDK</a> is not installed."
+        text = "The module could not be loaded because <a href='https://pypi.org/project/supervisely/'>Supervisely</a> package is not installed."
     errorLabel = qt.QLabel(text)
     errorLabel.setTextFormat(qt.Qt.RichText)
     errorLabel.setTextInteractionFlags(qt.Qt.TextBrowserInteraction)
