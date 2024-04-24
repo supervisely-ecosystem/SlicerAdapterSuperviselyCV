@@ -727,6 +727,8 @@ Do you want to continue?""",
         self.ui.progressBar.hide()
         self.ui.teamJobs.setChecked(True)
         self.ui.teamJobs.setEnabled(True)
+        self.ui.teamSelector.blockSignals(True)
+        self.ui.jobSelector.blockSignals(True)
         if "Select..." not in [
             self.ui.teamSelector.itemText(i) for i in range(self.ui.teamSelector.count)
         ]:
@@ -740,6 +742,8 @@ Do you want to continue?""",
         self.ui.teamSelector.addItems([team.name for team in self.teamList])
         self.ui.teamSelector.currentText = "Select..."
         self.ui.jobSelector.currentText = "Select..."
+        self.ui.teamSelector.blockSignals(False)
+        self.ui.jobSelector.blockSignals(False)
         self.ui.teamSelector.setEnabled(True)
         self.ui.jobSelector.setEnabled(False)
 

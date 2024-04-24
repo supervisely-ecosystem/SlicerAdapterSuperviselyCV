@@ -238,8 +238,10 @@ class labelingJobsAnnotatingWidget(ScriptedLoadableModuleWidget):
         with slicer.util.tryWithErrorDisplay(
             _("Failed to load volumes with annotations."), waitCursor=True
         ):
+            self.ui.volumeSelector.blockSignals(True)
             index = self.ui.volumeSelector.findText("Select...")
             self.ui.volumeSelector.removeItem(index)
+            self.ui.volumeSelector.blockSignals(False)
             if (
                 self.ui.autoSaveVolume.isChecked()
                 and self.logic.volume
