@@ -268,14 +268,7 @@ Do you want to continue?""",
 
     @log_method_call
     def loadVolumes(self) -> None:
-        if self.volume:
-            self.volume.clear()
-            self.volume = None
-
-        try:
-            slicer.mrmlScene.Clear()
-        except Exception:
-            pass
+        clear(self, local_data=False)
 
         maskDir = f"{self.savePath}/{self.activeJob.dataset_name}/mask/{self.ui.volumeSelector.currentText}"
 
@@ -405,6 +398,10 @@ Do you want to continue?""",
     def uploadAnnObjectChangesToServer(self) -> None:
         from uuid import UUID
 
+        from numpy import bool_, zeros
+
+        dialog = SuperviselyDialog("\nSaving changes to the server...\n", type="comment")
+
         for segmentation in self.volume.segmentations:
             for segment in segmentation.segments:
                 if not segment.delete:
@@ -439,6 +436,13 @@ Do you want to continue?""",
                         oldKeyIdMapDict = copy.deepcopy(self.keyIdMap).to_dict()
                         # Upload new annotation object to server
                         self.api.volume.annotation.append(volumeInfo.id, new_ann, self.keyIdMap)
+
+                        # TODO Replace with the less expensive method
+                        # obj_id = VolumeObjectApi.append_bulk(volumeInfo.id, [new_object], self.keyIdMap)
+                        # VolumeFigureApi._append_bulk_mask3d(
+                        #     volumeInfo.id, [new_object.figure], self.keyIdMap
+                        # )
+
                         # keyIdMap object updated during upload, so we can compare it with old one
                         newKeyIdMapDict = self.keyIdMap.to_dict()
                         # Get maskKey and objectId of new segment
@@ -453,6 +457,8 @@ Do you want to continue?""",
                         newPath = os.path.dirname(segment.path) + f"/{segment.maskKey}.nrrd"
                         os.rename(segment.path, newPath)
                         segment.path = newPath
+                        # Replace geometry data to conform to the Mask3D format in json file
+                        new_object.figure.geometry.data = zeros((3, 3, 3), bool_)
                         # Update annotation and keyIdMap files
                         self.ann = self.ann.add_objects([new_object])
                         self.ann.dump_json(
@@ -465,42 +471,44 @@ Do you want to continue?""",
 
         # Collect objects to remove
         objects_to_remove = []
-        keys_to_remove = []
-        segments_to_remove = []
-        mask_key_to_remove = []
+        object_keys_to_remove = []
+        figures_to_remove = []
+        figure_keys_to_remove = []
 
         for segmentation in self.volume.segmentations:
             for segment in segmentation.segments:
                 if segment.delete:
                     objects_to_remove.append(segment.objectId)
-                    keys_to_remove.append(self.keyIdMap.get_object_key(segment.objectId))
-                    segments_to_remove.append((segmentation, segment))
-                    mask_key_to_remove.append(UUID(segment.maskKey))
+                    object_keys_to_remove.append(self.keyIdMap.get_object_key(segment.objectId))
+                    figures_to_remove.append((segmentation, segment))
+                    figure_keys_to_remove.append(UUID(segment.maskKey))
+        if objects_to_remove:
+            # Remove objects from server
+            self.api.volume.object.remove_batch(objects_to_remove)
 
-        # Remove objects from server
-        self.api.volume.object.remove_batch(objects_to_remove)
+            # Remove objects from annotation object
+            self.ann = self.ann.remove_objects(object_keys_to_remove)
 
-        # Remove objects from annotation object
-        self.ann = self.ann.remove_objects(keys_to_remove)
+            # Remove objects and its figures from keyIdMap object
+            for object_id in objects_to_remove:
+                self.keyIdMap.remove_object(id=object_id)
 
-        # Remove objects and its figures from keyIdMap object
-        for object_id in objects_to_remove:
-            self.keyIdMap.remove_object(id=object_id)
+            # Remove figures from keyIdMap object
+            for key in figure_keys_to_remove:
+                self.keyIdMap.remove_figure(key=key)
 
-        # Remove figures from keyIdMap object
-        for key in mask_key_to_remove:
-            self.keyIdMap.remove_figure(key=key)
+            # Update annotation and keyIdMap files
+            self.ann.dump_json(
+                f"{self.savePath}/{self.activeJob.dataset_name}/ann/{self.volume.name}.json",
+                key_id_map=self.keyIdMap,
+            )
+            self.keyIdMap.dump_json(f"{self.savePath}/key_id_map.json")
 
-        # Update annotation and keyIdMap files
-        self.ann.dump_json(
-            f"{self.savePath}/{self.activeJob.dataset_name}/ann/{self.volume.name}.json",
-            key_id_map=self.keyIdMap,
-        )
-        self.keyIdMap.dump_json(f"{self.savePath}/key_id_map.json")
+            # Remove segments in Slicer
+            for segmentation, segment in figures_to_remove:
+                segmentation.removeSegmentBySegment(segment)
 
-        # Remove segments in Slicer
-        for segmentation, segment in segments_to_remove:
-            segmentation.removeSegmentBySegment(segment)
+        dialog.close()
 
     # -------------------------------------- Tag Methods Section ------------------------------------- #
 
