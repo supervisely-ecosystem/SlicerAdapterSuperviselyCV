@@ -21,7 +21,8 @@ set(RESOURCES_FILES
   )
 
 set(MODULE_LIB
-  moduleLib/__init__.py
+  moduleLib/__init__.py  
+  moduleLib/baseLogic.py
   moduleLib/segmentation.py
   moduleLib/ui.py
   moduleLib/utils.py

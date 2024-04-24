@@ -98,10 +98,23 @@ class SuperviselyDialog(qt.QDialog):
     def __init__(
         self,
         message,
-        type: Literal["info", "error", "confirm", "delay"] = "info",
+        type: Literal["info", "error", "confirm", "delay", "comment"] = "info",
         delay: int = 3000,
         parent=None,
     ):
+        """Create a dialog with a message and a button.
+
+        Parameters
+        ----------
+        message : str
+            The message to be displayed.
+        type : Literal["info", "error", "confirm", "delay"], optional
+            The type of the dialog, by default "info".
+        delay : int, optional
+            The delay in milliseconds before the dialog closes, by default 3000. Only used when type is "delay".
+        parent : qt.QWidget, optional
+            The parent widget, by default None.
+        """
         super(SuperviselyDialog, self).__init__(parent)
         self.setWindowFlags(self.windowFlags() & ~qt.Qt.WindowContextHelpButtonHint)
         self.setWindowTitle("Information")
@@ -126,7 +139,7 @@ class SuperviselyDialog(qt.QDialog):
         buttonLayout.addItem(
             qt.QSpacerItem(20, 40, qt.QSizePolicy.Expanding, qt.QSizePolicy.Minimum)
         )
-        if type != "delay":
+        if type not in ["delay", "comment"]:
             if type == "confirm":
                 self.button = qt.QPushButton("Yes")
                 self.button.clicked.connect(self.on_ok_clicked)
@@ -143,7 +156,11 @@ class SuperviselyDialog(qt.QDialog):
         self.setLayout(layout)
 
         self.adjustSize()
-        self.exec_()
+        if type == "comment":
+            self.show()
+            qt.QApplication.processEvents()
+        else:
+            self.exec_()
 
     def on_ok_clicked(self):
         self.decision = True
@@ -162,7 +179,7 @@ class SuperviselyDialog(qt.QDialog):
 
 def block_widget(widget, text: str = None):
     if text is None:
-        text = "The module could not be loaded because the <a href='https://pypi.org/project/supervisely/'>Supervisely SDK</a> is not installed."
+        text = "The module could not be loaded because <a href='https://pypi.org/project/supervisely/'>Supervisely</a> package is not installed."
     errorLabel = qt.QLabel(text)
     errorLabel.setTextFormat(qt.Qt.RichText)
     errorLabel.setTextInteractionFlags(qt.Qt.TextBrowserInteraction)
