@@ -35,6 +35,7 @@ from moduleLib import (
     RESTORE_LIB_FILE,
     InputDialog,
     SuperviselyDialog,
+    clear,
     log_method_call,
     log_method_call_args,
     segmentClass,
@@ -126,7 +127,6 @@ class BaseLogic(ScriptedLoadableModuleLogic):
     def logIn(self) -> None:
 
         if self.ui.connectButton.text == "Disconnect":
-            self.removeLocalData()
             self.ui.connectButton.text = "Connect"
             self.ui.serverAddress.enabled = True
             self.ui.login.enabled = True
@@ -149,6 +149,7 @@ class BaseLogic(ScriptedLoadableModuleLogic):
             dotenv.unset_key(ENV_FILE_PATH, "LOGIN_NAME")
             self.api = None
             self._deactivateTeamSelection()
+            clear(self)
             return
 
         activeModule = dotenv.get_key(ENV_FILE_PATH, "ACTIVE_SLY_MODULE")
@@ -718,8 +719,15 @@ Do you want to continue?""",
         self.ui.progressBar.hide()
         self.ui.teamJobs.setChecked(True)
         self.ui.teamJobs.setEnabled(True)
-        self.ui.teamSelector.addItem("Select...")
-        self.ui.jobSelector.addItem("Select...")
+        if "Select..." not in [
+            self.ui.teamSelector.itemText(i) for i in range(self.ui.teamSelector.count)
+        ]:
+            self.ui.teamSelector.addItem("Select...")
+
+        if "Select..." not in [
+            self.ui.jobSelector.itemText(i) for i in range(self.ui.jobSelector.count)
+        ]:
+            self.ui.jobSelector.addItem("Select...")
         self.teamList = self.api.team.get_list()
         self.ui.teamSelector.addItems([team.name for team in self.teamList])
         self.ui.teamSelector.currentText = "Select..."
@@ -843,16 +851,7 @@ Do you want to continue?""",
 
     @log_method_call_args
     def _createColorIcon(self, color):
-        # moduleDir = os.path.dirname(slicer.util.modulePath(self.__module__))
-        # labelIconPath = os.path.join(moduleDir, "Resources/Icons", "done.svg")
-        # pixmap = qt.QPixmap(100, 100)
-        # pixmap.fill(qt.Qt.transparent)
-        # painter = qt.QPainter(pixmap)
-        # renderer = QSvgRenderer(labelIconPath)
-        # painter.setBrush(qt.QColor(color[0], color[1], color[2]))
-        # painter.setPen(qt.QColor(color[0], color[1], color[2]))
-        # renderer.render(painter)
-        # painter.end()
+        # TODO refactor to use tag.svg with custom color
         pixmap = qt.QPixmap(10, 10)
         pixmap.fill(qt.QColor(color[0], color[1], color[2]))
         icon = qt.QIcon(pixmap)

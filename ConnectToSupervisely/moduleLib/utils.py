@@ -205,3 +205,18 @@ It will be installed automatically now.
                 slicer.util.restart()
     else:
         module.ready_to_start = True
+
+
+def clear(logic, local_data: bool = True):
+    """Clears the scene and removes local data
+
+    Args:
+        logic: BaseLogic instance
+        local_data: remove local data or not
+    """
+    slicer.mrmlScene.Clear()
+    if local_data:
+        logic.removeLocalData()
+    if logic.volume:
+        logic.volume.clear()
+        logic.volume = None

@@ -19,6 +19,7 @@ except ModuleNotFoundError:
 from moduleLib import (
     SuperviselyDialog,
     block_widget,
+    clear,
     import_supervisely,
     log_method_call,
     log_method_call_args,
@@ -175,11 +176,7 @@ class labelingJobsReviewingWidget(ScriptedLoadableModuleWidget):
                     self.logic.saveAnnotations()
                     self.logic.uploadAnnObjectChangesToServer()
                     self.logic.uploadTagsChangesToServer()
-            slicer.mrmlScene.Clear()
-            self.logic.removeLocalData()
-            if self.logic.volume:
-                self.logic.volume.clear()
-                self.logic.volume = None
+            clear(self.logic)
             self.logic.getJobs()
             self.ui.workingDirButton.setEnabled(True)
             self.ui.activeJob.setChecked(False)
@@ -201,11 +198,7 @@ class labelingJobsReviewingWidget(ScriptedLoadableModuleWidget):
                     self.logic.saveAnnotations()
                     self.logic.uploadAnnObjectChangesToServer()
                     self.logic.uploadTagsChangesToServer()
-            slicer.mrmlScene.Clear()
-            self.logic.removeLocalData()
-            if self.logic.volume:
-                self.logic.volume.clear()
-                self.logic.volume = None
+            clear(self.logic)
             self.logic.changeLabelingButtonState()
             self.logic.setActiveJob()
             self.ui.tags.setEnabled(False)
@@ -261,10 +254,7 @@ class labelingJobsReviewingWidget(ScriptedLoadableModuleWidget):
             try:
                 self.logic.loadVolumes()
             except Exception as e:
-                slicer.mrmlScene.Clear()
-                if self.logic.volume:
-                    self.logic.volume.clear()
-                    self.logic.volume = None
+                clear(self.logic, local_data=False)
                 raise e
 
     @log_method_call
@@ -304,11 +294,7 @@ class labelingJobsReviewingWidget(ScriptedLoadableModuleWidget):
         """Run processing when user clicks "Submit" button."""
         with slicer.util.tryWithErrorDisplay(_("Failed to Finished job."), waitCursor=True):
             self.logic.changeJobStatus("completed")
-            slicer.mrmlScene.Clear()
-            self.logic.removeLocalData()
-            if self.logic.volume:
-                self.logic.volume.clear()
-                self.logic.volume = None
+            clear(self.logic)
             self.logic.getJobs()
 
     @log_method_call
