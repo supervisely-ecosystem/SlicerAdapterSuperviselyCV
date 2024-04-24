@@ -98,7 +98,7 @@ class SuperviselyDialog(qt.QDialog):
     def __init__(
         self,
         message,
-        type: Literal["info", "error", "confirm", "delay"] = "info",
+        type: Literal["info", "error", "confirm", "delay", "comment"] = "info",
         delay: int = 3000,
         parent=None,
     ):
@@ -111,7 +111,7 @@ class SuperviselyDialog(qt.QDialog):
         type : Literal["info", "error", "confirm", "delay"], optional
             The type of the dialog, by default "info".
         delay : int, optional
-            The delay in milliseconds before the dialog closes, by default 3000.
+            The delay in milliseconds before the dialog closes, by default 3000. Only used when type is "delay".
         parent : qt.QWidget, optional
             The parent widget, by default None.
         """
@@ -139,7 +139,7 @@ class SuperviselyDialog(qt.QDialog):
         buttonLayout.addItem(
             qt.QSpacerItem(20, 40, qt.QSizePolicy.Expanding, qt.QSizePolicy.Minimum)
         )
-        if type != "delay":
+        if type not in ["delay", "comment"]:
             if type == "confirm":
                 self.button = qt.QPushButton("Yes")
                 self.button.clicked.connect(self.on_ok_clicked)
@@ -156,7 +156,11 @@ class SuperviselyDialog(qt.QDialog):
         self.setLayout(layout)
 
         self.adjustSize()
-        self.exec_()
+        if type == "comment":
+            self.show()
+            qt.QApplication.processEvents()
+        else:
+            self.exec_()
 
     def on_ok_clicked(self):
         self.decision = True
