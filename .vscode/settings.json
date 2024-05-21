@@ -1,77 +1,70 @@
 {
-    "files.exclude": {
-        "**/__pycache__": true,
-        "build": true,
-        "supervisely.egg-info": true,
-        ".venv": true
-    },
-    "files.associations": {
-        "*.svg": "html",
-        "*.ui": "html",},
-    "python.defaultInterpreterPath": "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\bin\\PythonSlicer.exe",
-    "python.autoComplete.extraPaths": [
-        "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\",
-		"C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\bin",
-		"C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\bin\\Python",
-        "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\lib\\Python",
-        "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\lib\\QtPlugins",
-        "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\lib\\Slicer-5.6",		
-        "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\lib\\Python\\Scripts",
-    ],
+  "files.exclude": {
+    "**/__pycache__": true,
+    "build": true,
+    "supervisely.egg-info": true,
+    ".venv": true
+  },
+  "files.associations": {
+    "*.svg": "html",
+    "*.ui": "html"
+  },
+  "python.defaultInterpreterPath": "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\bin\\PythonSlicer.exe",
+  "python.autoComplete.extraPaths": [
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\",
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\bin",
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\bin\\Python",
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\lib\\Python",
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\lib\\QtPlugins",
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\lib\\Slicer-5.6",
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\lib\\Python\\Scripts"
+  ],
 
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "black-formatter.args": ["--line-length", "100"],
+
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true,
-    "editor.formatOnPaste": true,
-    "editor.formatOnType": true,
-    "black-formatter.args": [
-        "--line-length",
-        "100"
-    ],
-    
-    "[html]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.tabSize": 4,
-        "editor.detectIndentation": false,
-    },
-    "[json]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true,
-    },
-    "[python]": {        
-        "editor.defaultFormatter": "ms-python.black-formatter",
-        "editor.formatOnSave": true,
-        "editor.codeActionsOnSave": {
-            "source.organizeImports": "explicit"
-        },
-    },
-    "isort.args": [
-        "--profile",
-        "black"
-    ],
-    "debug.inlineValues": "off",
-    "python.analysis.typeCheckingMode": "off",
-    "python.analysis.autoImportCompletions": false,
-    "python.analysis.logLevel": "Trace",
-    "python.testing.pytestArgs": [
-        "tests/inference_cache"
-    ],
-    "python.testing.unittestEnabled": false,
-    "workbench.colorCustomizations": {
-        "minimap.errorHighlight": "#ff0000",
-        "editorOverviewRuler.errorForeground": "#ff0000",
-        "editorOverviewRuler.warningForeground": "#ff9900",
-        "minimap.warningHighlight": "#ff9900",
-        "minimap.infoHighlight": "#00a8aa",
-        "editorOverviewRuler.infoForeground": "#00a8aa"
-    },
-    "cmake.configureOnOpen": false,
-    "python.analysis.extraPaths": [
-        "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\",
-        "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\lib\\Python",
-        "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\lib\\QtPlugins",
-        "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\lib\\Slicer-5.6",
-        "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\bin",
-        "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\bin\\Python",
-        "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\bin\\Python\\slicer",
-        "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.1\\lib\\Python\\Scripts"
-    ]
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "isort.args": ["--profile", "black"],
+  "debug.inlineValues": "off",
+  "python.analysis.typeCheckingMode": "off",
+  "python.analysis.autoImportCompletions": false,
+  "python.analysis.logLevel": "Trace",
+  "python.testing.pytestArgs": ["tests/inference_cache"],
+  "python.testing.unittestEnabled": false,
+  "workbench.colorCustomizations": {
+    "minimap.errorHighlight": "#ff0000",
+    "editorOverviewRuler.errorForeground": "#ff0000",
+    "editorOverviewRuler.warningForeground": "#ff9900",
+    "minimap.warningHighlight": "#ff9900",
+    "minimap.infoHighlight": "#00a8aa",
+    "editorOverviewRuler.infoForeground": "#00a8aa"
+  },
+  "cmake.configureOnOpen": false,
+  "python.analysis.extraPaths": [
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\",
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\lib\\Python",
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\lib\\QtPlugins",
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\lib\\Slicer-5.6",
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\bin",
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\bin\\Python",
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\bin\\Python\\slicer",
+    "C:\\Users\\ganpo\\AppData\\Local\\slicer.org\\Slicer 5.6.2\\lib\\Python\\Scripts"
+  ]
 }
