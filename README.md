@@ -11,7 +11,7 @@
 </p>
 
 ![](https://img.shields.io/badge/3D%20Slicer-%205.6.2-C0D4E5)
-![](https://img.shields.io/badge/ConnectToSupervisely-0.0.2-FF3C89)
+![](https://img.shields.io/badge/ConnectToSupervisely-0.0.4-FF3C89)
 [![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervisely.com/slack)
 
 </div>
@@ -175,7 +175,7 @@ The user can configure the working directory where data will be stored locally w
 
 ## Release Notes
 
-#### v0.0.1 - v0.0.2
+#### v0.0.1 - v0.0.4
 
 ☝️ Does not support:
 
