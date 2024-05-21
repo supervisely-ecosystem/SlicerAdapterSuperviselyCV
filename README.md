@@ -11,7 +11,7 @@
 </p>
 
 ![](https://img.shields.io/badge/3D%20Slicer-%205.6.2-C0D4E5)
-![](https://img.shields.io/badge/ConnectToSupervisely-0.0.2-FF3C89)
+![](https://img.shields.io/badge/ConnectToSupervisely-0.0.4-FF3C89)
 [![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervisely.com/slack)
 
 </div>
