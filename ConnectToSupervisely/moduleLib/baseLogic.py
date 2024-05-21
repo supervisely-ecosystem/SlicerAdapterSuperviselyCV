@@ -286,6 +286,7 @@ Do you want to continue?""",
             f"{self.savePath}/{self.activeJob.dataset_name}/volume/{self.volume.name}",
             {"show": True},
         )
+        self.volume.node.SetName(self.volume.name)
 
         self._createAnnObject()
         self.createTagButtons()
@@ -596,9 +597,9 @@ Do you want to continue?""",
         self.tagMetas = self.projectMeta.tag_metas.items()
         self._createdButtons = 0
         for tagMeta in self.tagMetas:
-            if (
-                tagMeta.name in self.activeJob.tags_to_label
-                and tagMeta.applicable_to == TagApplicableTo.IMAGES_ONLY
+            if tagMeta.name in self.activeJob.tags_to_label and tagMeta.applicable_to in (
+                TagApplicableTo.IMAGES_ONLY,
+                TagApplicableTo.ALL,
             ):
                 if tagMeta.value_type == TagValueType.NONE:
                     button = qt.QPushButton(tagMeta.name + "    ➡️")
